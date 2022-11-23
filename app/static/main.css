@@ -1,0 +1,57 @@
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+}
+
+.background {
+    display: inline-block;
+    position: fixed;
+    height: 100%;
+    z-index: -1;
+}
+
+.background .image {
+    display: inline-block;
+    height: 100%;
+}
+
+.background .gradient {
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.background .gradient.left {
+    width: 40%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 1) 10%, rgba(255, 0, 0, 0));
+}
+
+.background .gradient.right {
+    width: 60%;
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 1) 22%, rgba(255, 0, 0, 0));
+}
+
+.background .gradient.top {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.shards {
+    display: inline-block;
+    position: fixed;
+    top: 40%;
+    right: 0;
+    height: 70%;
+}
