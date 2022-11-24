@@ -1,7 +1,15 @@
+:root {
+    --blue: #0A3149;
+    --yellow: #E5A100;
+}
+
 * {
     padding: 0;
     margin: 0;
     border: 0;
+
+    font-family: "Cambria Math";
+    color: var(--blue)
 }
 
 html {
@@ -12,6 +20,26 @@ body {
     height: 100%;
     width: 100%;
 }
+
+a:hover,
+a:active,
+a:link,
+a:visited {
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.fill {
+
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+
+/* Background */
+
 
 .background {
     display: inline-block;
@@ -54,4 +82,59 @@ body {
     top: 40%;
     right: 0;
     height: 70%;
+}
+
+/* Main */
+
+.main {
+    display: inline-block;
+    width: 60%;
+    height: 180%;
+    margin-left: 8%;
+}
+
+/* Main navbar */
+
+.navmain {
+    position: sticky;
+    margin-top: 100px;
+    top: 20px;
+}
+
+.navmain .title .logo {
+    width: 200px
+}
+
+.navmain .title .text {
+    padding-top: 70px;
+    padding-left: 20px;
+}
+
+.navmain .title .text img {
+    width: 250px;
+    padding-left: 30px;
+}
+
+.navmain .title .text h1 {
+    color: var(--yellow);
+    font-size: 60px;
+    text-transform: uppercase;
+}
+
+.navmain .navbar {
+    position: absolute;
+    bottom: -6px;
+    left: 250px;
+}
+
+.navmain .navbar a {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 20px;
+    text-transform: uppercase;
+    transition-duration: 0.1s;
+}
+
+.navmain .navbar a:hover {
+    color: #68baf1;
 }

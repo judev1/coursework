@@ -1,0 +1,50 @@
+{% if active_gala %}
+{% if user and user.is_admin %}
+<!-- Displays if there is an active gala and the user is an admin -->
+<a href="/manage">
+	Manage Gala
+</a>
+{% else %}
+<!-- Displays if there is an active gala and the user is not an admin -->
+<a href="/current">
+	Current Gala
+</a>
+{% endif %}
+{% elif live_gala %}
+{% if user and user.is_admin %}
+<!-- Displays if there is a live gala and the user is an admin -->
+<!-- There cannot be an active an a live Gala at the same time -->
+<a href="/manage">
+	Organise Gala
+</a>
+{% else %}
+<!-- Displays if there is a live gala and the user is not an admin -->
+<a href="/live">
+	Current Gala
+</a>
+{% endif %}
+{% elif user and user.is_admin %}
+<!-- Displays if there is not a gala and the user is an admin -->
+<a href="/manage">
+	Create Gala
+</a>
+{% endif %}
+<!-- Always displays past galas -->
+<a href="/galas">
+	Past Galas
+</a>
+<!-- Always displays stats -->
+<a href="/stats">
+	Stats
+</a>
+{% if user %}
+<!-- Displays if the user is logged in -->
+<a href="/profile">
+	Profile
+</a>
+{% else %}
+<!-- Displays if the user is not logged in -->
+<a href="/login">
+	Login
+</a>
+{% endif %}

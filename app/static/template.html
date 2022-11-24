@@ -3,6 +3,7 @@
     <head>
         <link rel="Shortcut Icon" href="static/images/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="static/main.css">
+        <title>Swimming Portal</title>
     </head>
     <body>
         <div class="background">
@@ -12,5 +13,23 @@
             <div class="gradient top"></div>
         </div>
         <img class="shards" src="static/images/shards.png">
+        <div class="main">
+            {% if main %}
+            <div class="navmain">
+                <table class="title">
+                    <td class="logo">
+                        <img src="static/images/rugbylogo.svg">
+                    </td>
+                    <td class="text">
+                        <img src="static/images/rugbytext.svg">
+                        <h1>Swimming Portal</h1>
+                    </td>
+                </table>
+                <div class="navbar">
+                    {% include "navbar.html" %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </body>
 </html>

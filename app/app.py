@@ -6,11 +6,19 @@ from flask import render_template
 app = Flask(__name__, template_folder='static')
 
 
+class FakeUser:
+    is_admin = True
+
+
 # The route for the main page
 @app.route('/', methods=['GET'])
 def main():
     return render_template(
-        'template.html'
+        'template.html',
+        main=True,
+        user=None,
+        active_gala=True,
+        live_gala=False
     )
 
 
