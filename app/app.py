@@ -15,8 +15,8 @@ class FakeUser:
 def main():
     return render_template(
         'template.html',
-        main=True,
-        user=None,
+        main=False,
+        user=FakeUser,
         active_gala=True,
         live_gala=False
     )
