@@ -51,6 +51,7 @@ a:visited {
 .background .image {
     display: inline-block;
     height: 100%;
+    opacity: 0.1;
 }
 
 .background .gradient {
@@ -69,11 +70,6 @@ a:visited {
     width: 60%;
     right: 0;
     background: linear-gradient(to left, rgba(255, 255, 255, 1) 22%, rgba(255, 0, 0, 0));
-}
-
-.background .gradient.top {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.9);
 }
 
 .shards {

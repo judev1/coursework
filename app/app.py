@@ -7,7 +7,10 @@ app = Flask(__name__, template_folder='static')
 
 
 class FakeUser:
-    is_admin = True
+	is_admin = False
+
+class FakeAdmin:
+	is_admin = True
 
 
 # The route for the main page
@@ -15,12 +18,11 @@ class FakeUser:
 def main():
     return render_template(
         'template.html',
-        main=False,
-        user=FakeUser,
-        active_gala=True,
+        main=True,
+        user=None,
+        active_gala=False,
         live_gala=False
     )
-
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
