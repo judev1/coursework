@@ -3,6 +3,7 @@
     --blue-opaque: #0A314920;
     --blue-light: #68BAF1;
     --yellow: #E5A100;
+    --red: #AF2A40;
 }
 
 * {
@@ -23,6 +24,10 @@ body {
     width: 100%;
 }
 
+a {
+    transition-duration: 0.2s;
+}
+
 a:hover,
 a:active,
 a:link,
@@ -32,11 +37,20 @@ a:visited {
     box-shadow: none;
 }
 
+a:hover {
+    filter: brightness(3);
+}
+
 .fill {
 
     display: block;
     height: 100%;
     width: 100%;
+}
+
+req::before {
+    content: "*";
+    color: var(--red);
 }
 
 /* Background */
@@ -150,10 +164,6 @@ a:visited {
     background: var(--blue-opaque);
 }
 
-.navnorm .navbar a:hover {
-    color: #229aeb;
-}
-
 /* Universal navbar styles */
 
 .navbar a {
@@ -161,9 +171,92 @@ a:visited {
     padding-right: 8px;
     font-size: 20px;
     text-transform: uppercase;
-    transition-duration: 0.1s;
 }
 
-.navbar a:hover {
-    color: var(--light-blue);
+/* Login styles */
+
+.center-box {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    transform: translate(-50%, -50%);
+    background: var(--blue-opaque);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.back .icon {
+    width: 8px;
+}
+
+.back .text {
+    display: inline;
+    font-size: 12px;
+}
+
+form {
+    padding: 10px;
+}
+
+form .title {
+    width: calc(100% - 40px);
+    font-size: 32px;
+    text-align: center;
+    padding: 20px;
+}
+
+form .text {
+    font-size: 20px;
+}
+
+form .field {
+    width: calc(100% - 16px);
+    padding: 4px 8px;
+    background: var(--blue-opaque);
+    border-radius: 4px;
+}
+
+form .field:hover {
+    outline: 1px solid var(--blue);
+}
+
+form .field:focus {
+    outline: 2px solid var(--blue);
+}
+
+form .forgot-password {
+    display: block;
+    padding: 2px;
+    font-size: 12px;
+    text-align: right;
+    text-decoration: underline;
+}
+
+form .button {
+    width: 100%;
+    text-align: center;
+}
+
+form .button input {
+    font-size: 20px;
+    padding: 10px 40px;
+    border-radius: 8px;
+    background: var(--blue-opaque);
+    transition: 0.1s;
+    transition-property: transform;
+    cursor: pointer;
+}
+
+form .button input:hover {
+    outline: 1px solid var(--blue);
+}
+
+form .button input:active {
+    transform: translate(0, 1px);
+}
+
+form .button input:focus {
+    outline: 2px solid var(--blue);
 }

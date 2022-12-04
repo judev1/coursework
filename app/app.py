@@ -24,6 +24,12 @@ def main():
         live_gala=False
     )
 
+# The route for the login page
+@app.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
 # by itself for debugging)
