@@ -212,10 +212,13 @@ form .text {
 }
 
 form .field {
+    display: block;
     width: calc(100% - 16px);
+    height: 24px;
     padding: 4px 8px;
     background: var(--blue-opaque);
     border-radius: 4px;
+    font-size: 13px;
 }
 
 form .field:hover {
@@ -224,6 +227,14 @@ form .field:hover {
 
 form .field:focus {
     outline: 2px solid var(--blue);
+}
+
+form .field#password {
+    font-size: 12px;
+}
+
+form .field#password::placeholder {
+    font-size: 13px;
 }
 
 form .forgot-password {
@@ -259,4 +270,12 @@ form .button input:active {
 
 form .button input:focus {
     outline: 2px solid var(--blue);
+}
+
+form .field-error {
+    display: block;
+    padding: 2px;
+    font-size: 12px;
+    text-align: center;
+    color: var(--red);
 }
