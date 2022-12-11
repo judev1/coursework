@@ -20,7 +20,7 @@
                     <img class="icon" src="static/images/back.png">
                     <p class="text">Home</p>
                 </a>
-                <form onsubmit="return validatefields()">
+                <form onsubmit="return validatefields()" action="/login" method="post">
                     <div class="title">Login</div>
                     <h1 class="text"><req></req>Email</h1>
                     <input id="email" class="field" type="text" name="email" autocomplete="off"
