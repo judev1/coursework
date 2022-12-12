@@ -1,5 +1,12 @@
 import sqlite3
 import os
+import time
+
+# Imports the bcrypt module for hashing passwords
+import bcrypt
+
+# Imports the secrets module for generating random tokens
+import secrets
 
 
 # The database object which will handle SQL queries
@@ -150,6 +157,71 @@ class Database:
 
         # Commits the changes to the database
         self.conn.commit()
+
+    # Checks if the email exists
+    def check_email(self, email):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the user_id of the user with the given email
+        c.execute("""
+            SELECT user_id
+            FROM User
+            WHERE email = ?
+        """, (email,))
+
+        # Returns true if the user_id is not None
+        return c.fetchone() is not None
+
+    # Checks if the email and password are valid
+    def check_password(self, email, password):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the hash of the user with the given email
+        c.execute("""
+            SELECT hash
+            FROM User
+            WHERE email = ?
+        """, (email,))
+        hash = c.fetchone()[0]
+
+        # Encodes the password and hash to utf-8
+        password = password.encode('utf-8')
+        hash = hash.encode('utf-8')
+
+        # Checks if the password matches the hash
+        return bcrypt.checkpw(password, hash)
+
+    # Generates a token so the user can stay logged in
+    def generate_token(self, email, expiry):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the user_id from the email
+        c.execute("""
+            SELECT user_id
+            FROM User
+            WHERE email = ?
+        """, (email,))
+        user_id = c.fetchone()[0]
+
+        # Generates a random token
+        token = secrets.token_urlsafe(16)
+        # Gets the current time and adds the expiry time
+        expiry = int(time.time()) + expiry
+
+        # Inserts the token into the database
+        c.execute("""
+            INSERT INTO Token (token_id, user_id, expiry)
+            VALUES (?, ?, ?)
+        """, (token, user_id, expiry))
+        self.conn.commit()
+
+        return token
 
 
 # If database.py is the file being run
