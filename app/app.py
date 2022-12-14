@@ -42,6 +42,11 @@ class User:
     def is_admin(self):
         return self.coach or self.captain
 
+    def is_owner(self, user):
+        coach = self.coach and self.school_id == user.school_id
+        owner = self.user_id == user.user_id
+        return coach or owner
+
 # Checks a user's token
 def check_token():
 
@@ -58,13 +63,20 @@ def check_token():
 
     return False
 
-# Gets a user with a token
-def get_user():
+# Gets a user from an id
+def get_user(user_id):
+    details = db.get_user(user_id)
+
+    # Returns a User object if the user_id was valid
+    if details:
+        return User(details)
+
+# Gets the logged in user
+def get_logged_in_user():
     if check_token():
         token = request.cookies['token']
         user_id = db.get_user_id(token)
-        details = db.get_user(user_id)
-        return User(details)
+        return get_user(user_id)
 
 
 # The route for the main page
@@ -73,7 +85,7 @@ def main():
     return render_template(
         'template.html',
         main=True,
-        user=get_user(),
+        user=get_logged_in_user(),
         active_gala=False,
         live_gala=False
     )
@@ -126,6 +138,52 @@ def login_method():
         return 'Password was not provided'
 
     return 'Email was not provided'
+
+# The route for the profile page
+@app.route('/profile', methods=['GET'])
+def profile():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user_id = db.get_user_id(token)
+    user = get_user(user_id)
+
+    return render_template(
+        'profile.html',
+        main=False,
+        user=user,
+        user_page=user,
+        active_gala=False,
+        live_gala=False
+    )
+
+# The route for the profile pages
+@app.route('/profile/<user_id>', methods=['GET'])
+def profiles(user_id):
+
+    user_page = get_user(user_id)
+
+    # Checks if the user exists
+    if user_page:
+        user = get_logged_in_user()
+
+        # Checks if the logged in user is the user
+        if user and user.user_id == user_page.user_id:
+            return redirect('/profile')
+
+        return render_template(
+            'profile.html',
+            main=False,
+            user=user,
+            user_page=user_page,
+            active_gala=False,
+            live_gala=False
+    )
+
+    return 'Invalid user id'
 
 
 # Checks to see if the current file is the one being run (ie if another file

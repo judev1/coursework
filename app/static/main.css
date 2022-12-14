@@ -1,6 +1,7 @@
 :root {
     --blue: #0A3149;
     --blue-opaque: #0A314920;
+    --blue-opaquer: #0A314910;
     --blue-light: #68BAF1;
     --yellow: #E5A100;
     --red: #AF2A40;
@@ -143,9 +144,7 @@ req::before {
 .navnorm {
     /* most of this doesnt do anything */
     display: inline-block;
-    position: sticky;
     margin-top: 100px;
-    top: 100px;
     width: 100%;
     height: 100px;
 }
@@ -279,4 +278,159 @@ form .field-error {
     font-size: 12px;
     text-align: center;
     color: var(--red);
+}
+
+/* Profile styles */
+
+.profilebar {
+    display: inline-block;
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    background: var(--blue-opaquer);
+    text-align: center;
+}
+
+.profilebar .profilepic {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    border: 2px solid var(--blue);
+}
+
+.profilepic .pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    transition-duration: 0.1s;
+}
+
+.profilepic .edit {
+    display: inline-block;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    border-radius: 100%;
+    z-index: 2;
+    opacity: 0;
+    transition-duration: 0.1s;
+}
+
+.profilepic .edit .top,
+.profilepic .edit .bottom {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.profilepic .edit .top {
+    top: 15%;
+}
+
+.profilepic .edit .bottom {
+    bottom: 15%;
+}
+
+.profilepic .edit img {
+    position: absolute;
+    width: 30px;
+    left: calc(50% - 15px);
+    top: calc(50% - 15px);
+}
+
+.profilepic:hover > .editable {
+    opacity: 0.2;
+}
+
+.profilepic:hover > .edit {
+    opacity: 1;
+}
+
+.profilebar .text {
+    display: inline-block;
+    position: relative;
+    top: -20px;
+    height: 100%;
+    margin-left: 40px;
+}
+
+.profilebar .text h1 {
+    font-size: 40px;
+}
+
+.profilebar .text h2 {
+    font-size: 20px;
+}
+
+.profile {
+    width: calc(100% - 40px);
+    padding: calc(12px + 20px);
+}
+
+.profile .text {
+    display: inline-block;
+}
+
+.profile .field {
+    display: inline-block;
+    width: 200px;
+}
+
+.profile .field {
+    display: inline-block;
+    width: 100px;
+    margin-left: 20px;
+}
+
+.profile .checkbox {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.checkbox {
+    visibility: hidden;
+}
+
+.checkbox + label {
+    position: relative;
+    display: inline-flex;
+    height: 20px;
+    width: 20px;
+    border-radius: 3px;
+    background-color: var(--blue-opaque);
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.checkbox + label:hover {
+    outline: 1px solid var(--blue);
+}
+
+.checkbox + label:active {
+    outline: 2px solid var(--blue);
+}
+
+.checkbox:checked + label::after {
+    content: " ";
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    background: url("/static/images/check.png");
+    background-size: 20px 20px;
+    background-position: center center;
+}
+
+.profile .button input {
+    font-size: 14px;
+}
+
+.disabled .field,
+.disabled label {
+    pointer-events:none;
+    opacity:0.5;
 }

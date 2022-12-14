@@ -4,6 +4,8 @@
         <link rel="Shortcut Icon" href="/static/images/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="/static/main.css">
         <title>Swimming Portal</title>
+        {% block head %}
+		{% endblock %}
     </head>
     <body>
         <div class="background">
@@ -36,6 +38,8 @@
                 </div>
             </div>
             {% endif %}
+            {% block body %}
+            {% endblock %}
         </div>
     </body>
 </html>
