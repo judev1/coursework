@@ -223,6 +223,86 @@ class Database:
 
         return token
 
+    # Checks if the token is valid
+    def check_token(self, token):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the expiry time of the token
+        c.execute("""
+            SELECT expiry
+            FROM Token
+            WHERE token_id = ?
+        """, (token,))
+        expiry = c.fetchone()[0]
+        print(expiry)
+
+        # Checks if the token exists
+        if expiry is None:
+            return False
+
+        # Checks if the token has expired
+        if expiry < int(time.time()):
+
+            # Deletes the token from the database
+            c.execute("""
+                DELETE FROM Token
+                WHERE token_id = ?
+            """, (token,))
+            self.conn.commit()
+
+            return False
+
+        return True
+
+    # Gets the user_id from the token
+    def get_user_id(self, token):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the user_id of the token
+        c.execute("""
+            SELECT user_id
+            FROM Token
+            WHERE token_id = ?
+        """, (token,))
+        user_id = c.fetchone()[0]
+
+        return user_id
+
+    # Gets all the user details from the user_id
+    def get_user(self, user_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the user details from the user_id
+        c.execute("""
+            SELECT *
+            FROM User
+            WHERE user_id = ?
+        """, (user_id,))
+        user = c.fetchone()
+
+        return user
+
+    # Gets all the student details from the user_id
+    def get_student(self, user_id):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Gets the student details from the user_id
+            c.execute("""
+                SELECT *
+                FROM Student
+                WHERE user_id = ?
+            """, (user_id,))
+            student = c.fetchone()
+
+            return student
 
 # If database.py is the file being run
 if __name__ == '__main__':

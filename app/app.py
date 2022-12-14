@@ -15,11 +15,56 @@ from database import Database
 db = Database('app/database.db')
 
 
-class FakeUser:
-	is_admin = False
+class User:
 
-class FakeAdmin:
-	is_admin = True
+    def __init__(self, details):
+
+        self.user_id = details[0]
+        self.school_id = details[1]
+        self.email = details[2]
+
+        self.name = details[4]
+        self.surname = details[5]
+        self.gender = details[6]
+        self.has_picture = details[7]
+        self.coach = details[8]
+        print(details)
+
+        if not self.coach:
+
+            details = db.get_student(self.user_id)
+            print(details)
+            self.graduation_year = details[1]
+            self.fav_stroke = details[2]
+            self.captain = details[3]
+            self.is_swimming = details[4]
+
+    def is_admin(self):
+        return self.coach or self.captain
+
+# Checks a user's token
+def check_token():
+
+    # Checks if the user has a token
+    if 'token' in request.cookies:
+        token = request.cookies['token']
+
+        # Checks if the token is valid
+        if db.check_token(token):
+            return True
+
+        # If the token is invalid, delete it
+        redirect("/").delete_cookie('token')
+
+    return False
+
+# Gets a user with a token
+def get_user():
+    if check_token():
+        token = request.cookies['token']
+        user_id = db.get_user_id(token)
+        details = db.get_user(user_id)
+        return User(details)
 
 
 # The route for the main page
@@ -28,7 +73,7 @@ def main():
     return render_template(
         'template.html',
         main=True,
-        user=None,
+        user=get_user(),
         active_gala=False,
         live_gala=False
     )
@@ -36,11 +81,18 @@ def main():
 # The route for the login page
 @app.route('/login', methods=['GET'])
 def login():
+    # Checks if the user is already logged in
+    if check_token():
+        return redirect('/')
     return render_template('login.html')
 
 # The route for the login method
 @app.route('/login', methods=['POST'])
 def login_method():
+
+    # Checks if the user is already logged in
+    if check_token():
+        return redirect('/')
 
     # Checks if the email has been provided
     if 'email' in request.form:
@@ -81,5 +133,5 @@ def login_method():
 # by itself for debugging)
 if __name__ == '__main__':
 
-	# Runs the app with debugging
-	app.run(debug=True, use_reloader=False)
+    # Runs the app with debugging
+    app.run(debug=True, use_reloader=False)
