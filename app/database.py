@@ -236,7 +236,6 @@ class Database:
             WHERE token_id = ?
         """, (token,))
         expiry = c.fetchone()[0]
-        print(expiry)
 
         # Checks if the token exists
         if expiry is None:
@@ -291,18 +290,18 @@ class Database:
     # Gets all the student details from the user_id
     def get_student(self, user_id):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Gets the student details from the user_id
-            c.execute("""
-                SELECT *
-                FROM Student
-                WHERE user_id = ?
-            """, (user_id,))
-            student = c.fetchone()
+        # Gets the student details from the user_id
+        c.execute("""
+            SELECT *
+            FROM Student
+            WHERE user_id = ?
+        """, (user_id,))
+        student = c.fetchone()
 
-            return student
+        return student
 
 # If database.py is the file being run
 if __name__ == '__main__':
