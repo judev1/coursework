@@ -28,12 +28,10 @@ class User:
         self.gender = details[6]
         self.has_picture = details[7]
         self.coach = details[8]
-        print(details)
 
         if not self.coach:
 
             details = db.get_student(self.user_id)
-            print(details)
             self.graduation_year = details[1]
             self.fav_stroke = details[2]
             self.captain = details[3]
@@ -121,7 +119,6 @@ def login_method():
 
             # Gets the password from the form
             password = request.form['password']
-            print(password)
 
             # Checks if the password is correct
             if not db.check_password(email, password):
