@@ -1,27 +1,29 @@
 {% extends "template.html" %}
+{% block head %}
+<script src="/static/profile.js"></script>
+{% endblock %}
 {% block body %}
 <div class="profilebar">
     <div class="profilepic">
         {% if user and user.is_owner(user_page) %}
-        <div class="edit">
-            {% if user.profile_pic %}
-            <p class="top">change</p>
+        <div class="edit" id="edit">
+            {% if user.has_picture %}
+            <input type="file" id="file" onchange="upload(event)">
+            <label class="top" for="file">change</label>
             <img src="/static/images/edit.png">
-            <p class="bottom">remove</p>
+            <label class="bottom">remove</label>
             {% else %}
             <img src="/static/images/edit.png">
-            <p class="bottom">add</p>
+            <input type="file" id="file" onchange="upload(event)">
+            <label class="bottom" for="file">add</label>
             {% endif %}
         </div>
         <div class="editable pic">
         {% else %}
         <div class="pic">
         {% endif %}
-            {% if user_page.profile_pic %}
-            <img class="pic" src="/profilepics/{{ user_page.profile_pic }}">
-            {% else %}
-            <img class="pic" src="/static/images/studentprofilepic.png">
-            {% endif %}
+            <img class="pic" id="profile_picture"
+                src="/profile/{{ user_page.user_id }}/picture">
         </div>
     </div>
     <div class="text">

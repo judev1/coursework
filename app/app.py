@@ -3,9 +3,15 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect
+from flask import send_file
+
+import magic
 
 # Initiates the Flask object and sets the 'static' folder as the template folder
 app = Flask(__name__, template_folder='static')
+
+# Creates a new Magic object for getting the file type
+mime = magic.Magic(mime=True)
 
 
 # Imports the Database object from the database module
@@ -57,7 +63,7 @@ def check_token():
             return True
 
         # If the token is invalid, delete it
-        redirect("/").delete_cookie('token')
+        redirect('/').delete_cookie('token')
 
     return False
 
@@ -181,6 +187,62 @@ def profiles(user_id):
     )
 
     return 'Invalid user id'
+
+# The route for the profile pictures
+@app.route('/profile/<user_id>/picture', methods=['GET'])
+def profile_picture(user_id):
+
+    user = get_user(user_id)
+
+    # Sends the profile picture if the user has one
+    if user.has_picture:
+        filename = 'app/profile_pictures/' + user_id
+        file = open(filename, 'rb')
+        return send_file(file, mime.from_file(filename))
+
+    # Sends the default profile picture if the user is a student
+    if not user.coach:
+        filename = 'app/profile_pictures/student.png'
+        file = open(filename, 'rb')
+        return send_file(file, 'png')
+
+# The route for the upload picture method
+@app.route('/profile/upload_picture', methods=['POST'])
+def upload_profile_picture():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user_id = db.get_user_id(token)
+    user = get_user(user_id)
+
+    # Checks if the file has been provided
+    if 'file' in request.files:
+
+        # Gets the file from the form
+        file = request.files['file']
+
+        # Checks if the file is valid
+        if file.filename == '':
+            return 'No file was selected', 400
+
+        # Checks if the file is an image
+        if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            return 'File must be an image', 400
+        filename = str(user.user_id)
+
+        # Saves the file
+        file.save('app/profile_pictures/' + filename)
+
+        # Updates the database
+        db.update_picture(user.user_id, True)
+
+        # Returns a link to the profile picture
+        return f'/profile/{user.user_id}/picture' , 200
+
+    return 'File was not provided', 400
 
 
 # Checks to see if the current file is the one being run (ie if another file

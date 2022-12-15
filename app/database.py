@@ -303,6 +303,20 @@ class Database:
 
         return student
 
+    # Sets the profile picture of the user
+    def update_picture(self, user_id, value):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the profile picture of the user
+        c.execute("""
+            UPDATE User
+            SET has_picture = ?
+            WHERE user_id = ?
+        """, (int(value), user_id))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db
