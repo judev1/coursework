@@ -11,7 +11,7 @@
             <input type="file" id="file" onchange="upload(event)">
             <label class="top" for="file">change</label>
             <img src="/static/images/edit.png">
-            <label class="bottom">remove</label>
+            <label class="bottom" onclick="remove()">remove</label>
             {% else %}
             <img src="/static/images/edit.png">
             <input type="file" id="file" onchange="upload(event)">

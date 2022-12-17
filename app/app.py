@@ -6,6 +6,7 @@ from flask import redirect
 from flask import send_file
 
 import magic
+import os
 
 # Initiates the Flask object and sets the 'static' folder as the template folder
 app = Flask(__name__, template_folder='static')
@@ -231,10 +232,9 @@ def upload_profile_picture():
         # Checks if the file is an image
         if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             return 'File must be an image', 400
-        filename = str(user.user_id)
 
         # Saves the file
-        file.save('app/profile_pictures/' + filename)
+        file.save('app/profile_pictures/' + str(user_id))
 
         # Updates the database
         db.update_picture(user.user_id, True)
@@ -243,6 +243,29 @@ def upload_profile_picture():
         return f'/profile/{user.user_id}/picture' , 200
 
     return 'File was not provided', 400
+
+# The route for the remove picture method
+@app.route('/profile/remove_picture', methods=['POST'])
+def remove_profile_picture():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user_id = db.get_user_id(token)
+    user = get_user(user_id)
+
+    # Removes the file
+    filename = 'app/profile_pictures/' + str(user_id)
+    if os.path.exists(filename):
+        os.remove(filename)
+
+    # Updates the database
+    db.update_picture(user.user_id, False)
+
+    # Returns a link to the profile picture
+    return f'/profile/{user.user_id}/picture', 200
 
 
 # Checks to see if the current file is the one being run (ie if another file

@@ -28,7 +28,7 @@ function upload(event){
             $("#edit").append("<input type='file' id='file' onchange='upload(event)'>");
             $("#edit").append("<label class='top' for='file'>change</label>");
             $("#edit").append("<img src='/static/images/edit.png'>");
-            $("#edit").append("<label class='bottom'>remove</label>");
+            $("#edit").append("<label class='bottom' onclick='remove()'>remove</label>");
 
         } else {
             alert(xhr.responseText)
@@ -37,4 +37,34 @@ function upload(event){
 
     // Send the data to the server
     xhr.send(formData);
+}
+
+function remove(event){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/profile/remove_picture");
+
+    // Set up a handler for when the request finishes
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            d = new Date();
+            // The date is added to force the browser to reload the image
+            // The response text is the link to the user's profile picture
+            var filename = xhr.responseText + "?" + d.getTime();
+            $("#profile_picture").attr("src", filename);
+
+            // Delete all the children of the div
+            $("#edit").empty();
+
+            // Add new children to the div
+            $("#edit").append("<input type='file' id='file' onchange='upload(event)'>");
+            $("#edit").append("<img src='/static/images/edit.png'>");
+            $("#edit").append("<label class='bottom' for='file'>add</label>");
+
+        } else {
+            alert(xhr.responseText)
+        }
+    };
+
+    // Send the data to the server
+    xhr.send();
 }
