@@ -8,9 +8,12 @@ function upload(event){
     var formData = new FormData();
     formData.append("file", file);
 
+    // Get the user id from the meta tag
+    var user_id = $("meta[name='user_id']").attr("content");
+
     // Create an XMLHttpRequest object
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/profile/upload_picture");
+    xhr.open("POST", "/profile/" + user_id + "/upload_picture");
 
     // Set up a handler for when the request finishes
     xhr.onload = function () {
@@ -40,8 +43,13 @@ function upload(event){
 }
 
 function remove(event){
+
+    // Get the user id from the meta tag
+    var user_id = $("meta[name='user_id']").attr("content");
+
+    // Create an XMLHttpRequest object
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/profile/remove_picture");
+    xhr.open("POST", "/profile/" + user_id + "/remove_picture");
 
     // Set up a handler for when the request finishes
     xhr.onload = function () {

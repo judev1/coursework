@@ -208,16 +208,20 @@ def profile_picture(user_id):
         return send_file(file, 'png')
 
 # The route for the upload picture method
-@app.route('/profile/upload_picture', methods=['POST'])
-def upload_profile_picture():
+@app.route('/profile/<user_id>/upload_picture', methods=['POST'])
+def upload_profile_picture(user_id):
 
     # Checks if the user is logged in
     if not check_token():
         return redirect('/login')
 
     token = request.cookies['token']
-    user_id = db.get_user_id(token)
-    user = get_user(user_id)
+    user_page = get_user(user_id)
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is allowed to edit the profile picture
+    if not user.is_owner(user_page):
+        return 'You do not have permission to do this', 403
 
     # Checks if the file has been provided
     if 'file' in request.files:
@@ -237,24 +241,28 @@ def upload_profile_picture():
         file.save('app/profile_pictures/' + str(user_id))
 
         # Updates the database
-        db.update_picture(user.user_id, True)
+        db.update_picture(user_id, True)
 
         # Returns a link to the profile picture
-        return f'/profile/{user.user_id}/picture' , 200
+        return f'/profile/{user_id}/picture' , 200
 
     return 'File was not provided', 400
 
 # The route for the remove picture method
-@app.route('/profile/remove_picture', methods=['POST'])
-def remove_profile_picture():
+@app.route('/profile/<user_id>/remove_picture', methods=['POST'])
+def remove_profile_picture(user_id):
 
     # Checks if the user is logged in
     if not check_token():
         return redirect('/login')
 
     token = request.cookies['token']
-    user_id = db.get_user_id(token)
-    user = get_user(user_id)
+    user_page = get_user(user_id)
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is allowed to edit the profile picture
+    if not user.is_owner(user_page):
+        return 'You do not have permission to do this', 403
 
     # Removes the file
     filename = 'app/profile_pictures/' + str(user_id)
@@ -262,10 +270,10 @@ def remove_profile_picture():
         os.remove(filename)
 
     # Updates the database
-    db.update_picture(user.user_id, False)
+    db.update_picture(user_id, False)
 
     # Returns a link to the profile picture
-    return f'/profile/{user.user_id}/picture', 200
+    return f'/profile/{user_id}/picture', 200
 
 
 # Checks to see if the current file is the one being run (ie if another file
