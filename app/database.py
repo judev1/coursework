@@ -235,11 +235,12 @@ class Database:
             FROM Token
             WHERE token_id = ?
         """, (token,))
-        expiry = c.fetchone()[0]
 
         # Checks if the token exists
+        expiry = c.fetchone()
         if expiry is None:
             return False
+        expiry = expiry[0]
 
         # Checks if the token has expired
         if expiry < int(time.time()):
