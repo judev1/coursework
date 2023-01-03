@@ -318,6 +318,32 @@ class Database:
         """, (int(value), user_id))
         self.conn.commit()
 
+    def update_fav_stroke(self, user_id, value):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the favorite stroke of the user
+        c.execute("""
+            UPDATE Student
+            SET fav_stroke = ?
+            WHERE user_id = ?
+        """, (value, user_id))
+        self.conn.commit()
+
+    def update_is_swimming(self, user_id, value):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the is swimming of the user
+        c.execute("""
+            UPDATE Student
+            SET is_swimming = ?
+            WHERE user_id = ?
+        """, (int(value), user_id))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

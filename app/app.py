@@ -22,6 +22,15 @@ from database import Database
 db = Database('app/database.db')
 
 
+STROKES = [
+    'frontcrawl',
+    'backcrawl',
+    'breaststroke',
+    'butterfly',
+    'medley'
+]
+
+
 class User:
 
     def __init__(self, details):
@@ -274,6 +283,38 @@ def remove_profile_picture(user_id):
 
     # Returns a link to the profile picture
     return f'/profile/{user_id}/picture', 200
+
+
+# The route for the update user details method
+@app.route('/profile/<user_id>/update', methods=['POST'])
+def update_details(user_id):
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user_page = get_user(user_id)
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is allowed to edit the profile picture
+    if not user.is_owner(user_page):
+        return 'You do not have permission to do this', 403
+
+    # Updates the user's favourite stroke
+    if 'fav_stroke' in request.form:
+        fav_stroke = request.form['fav_stroke'].lower()
+        if fav_stroke not in STROKES:
+            return 'Invalid stroke', 400
+        db.update_fav_stroke(user_id, fav_stroke)
+
+    # Updates the user's swimming status
+    if 'swimming' in request.form:
+        db.update_is_swimming(user_id, True)
+    else:
+        db.update_is_swimming(user_id, False)
+
+    return redirect(f'/profile/{user_id}')
 
 
 # Checks to see if the current file is the one being run (ie if another file

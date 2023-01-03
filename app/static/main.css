@@ -448,3 +448,7 @@ form .field-error {
     pointer-events:none;
     opacity:0.5;
 }
+
+#invalid-stroke {
+    display: inline-block;
+}

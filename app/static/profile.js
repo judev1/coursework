@@ -1,4 +1,4 @@
-function upload(event){
+function upload(event) {
 
     // Get the file from the input
     var files = event.target.files;
@@ -42,7 +42,7 @@ function upload(event){
     xhr.send(formData);
 }
 
-function remove(event){
+function remove(event) {
 
     // Get the user id from the meta tag
     var user_id = $("meta[name='user_id']").attr("content");
@@ -76,3 +76,54 @@ function remove(event){
     // Send the data to the server
     xhr.send();
 }
+
+// A list of the strokes
+const strokes = ["backstroke", "breaststroke", "butterfly", "frontcrawl", "medley"];
+
+// Returns true if the stroke is valid, only displays the error message when
+// asked so that it doesn't display when the user is typing
+function validatestroke(display_error=true) {
+
+    // Get the favorite stroke from the input
+    var fav_stroke = $("input[name='fav_stroke']").val();
+    fav_stroke = fav_stroke.toLowerCase();
+
+    // Check if the favorite stroke is in the list of strokes
+    if (strokes.includes(fav_stroke)) {
+        return true;
+    } else if (fav_stroke == "freestyle") {
+        $("input[name='fav_stroke']").val("frontcrawl");
+        return true;
+    } else {
+        if (display_error) {
+            $("#invalid-stroke").show();
+        }
+        return false;
+    };
+}
+
+// Function called once the entire document has been rendered
+$(document).ready(function() {
+
+	// Hides the error messages
+	$("#invalid-stroke").hide()
+    var input = $("input[name='fav_stroke']");
+
+	// When the user clicks out of the stroke field
+	input.change(function() {
+		// Checks if the stroke is invalid
+        if (!validatestroke(false)) {
+            // Shows the error message if the stroke is invalid
+            $("#invalid-stroke").show();
+        };
+	});
+
+	// When the user types in the stroke field
+	input.bind("input propertychange", function() {
+        // Checks if the stroke is invalid
+        if (validatestroke(false)) {
+            // Hides the error message if the stroke is valid
+            $("#invalid-stroke").hide();
+        };
+	});
+});
