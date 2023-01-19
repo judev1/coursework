@@ -54,7 +54,7 @@
         {% set ns.odd = False %}
         {% endif %}
             <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
-            <td class="year">{{ swimmer.year() }}</td>
+            <td class="year">{{ swimmer.year }}</td>
             <td class="stroke">{{ swimmer.fav_stroke.capitalize() }}</td>
             <td class="swimming disabled">
                 <input class="checkbox" type="checkbox" name="swimming"
