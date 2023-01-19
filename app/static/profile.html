@@ -26,8 +26,7 @@
             <img class="pic" id="profile_picture"
                 src="/profile/{{ user_page.user_id }}/picture">
         </div>
-    </div>
-    <div class="text">
+    </div><div class="text">
         <h1 class="name">{{ user_page.name }} {{ user_page.surname }}</h1>
         <h2 class="School">Rugby School</h2>
     </div>
@@ -35,15 +34,15 @@
 <div class="profile">
     {% if user and user.is_owner(user_page) %}
     <form onsubmit="return validatestroke()" action="/profile/{{ user_page.user_id }}/update" method="post">
-        <h1 class="text">Favourite Stroke:</h1>
-        <input class="field" type="text" name="fav_stroke"
+        <h1 class="text">Favourite Stroke:
+        </h1><input class="field" type="text" name="fav_stroke"
             value="{{ user_page.fav_stroke.capitalize() }}">
         <p id="invalid-stroke" class="field-error">invalid stroke</p>
         <br><br>
-        <h1 class="text">Is Swimming:</h1>
-        <input class="checkbox" type="checkbox" id="swimming" name="swimming"
+        <h1 class="text">Is Swimming:
+        </h1><input class="checkbox" type="checkbox" id="swimming" name="swimming"
             {% if user_page.is_swimming %}checked{% endif %}/>
-        <label for="swimming"></label>
+        <label class="offset" for="swimming"></label>
         <br><br><br>
         <div class="button">
             <input type="submit" value="Update">
@@ -51,14 +50,14 @@
     </form>
     {% else %}
     <form class="disabled">
-        <h1 class="text">Favourite Stroke:</h1>
-        <input class="field" type="text" name="fav_stroke"
+        <h1 class="text">Favourite Stroke:
+        </h1><input class="field" type="text" name="fav_stroke"
             value="{{ user_page.fav_stroke.capitalize() }}">
         <br><br>
-        <h1 class="text">Is Swimming:</h1>
-        <input class="checkbox" type="checkbox" id="swimming" name="swimming"
+        <h1 class="text">Is Swimming:
+        </h1><input class="checkbox" type="checkbox" id="swimming" name="swimming"
             {% if user_page.is_swimming %}checked{% endif %}/>
-        <label for="swimming"></label>
+        <label class="offset" for="swimming"></label>
     </form>
     {% endif %}
 </div>

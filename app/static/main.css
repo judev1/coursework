@@ -437,6 +437,10 @@ form .field-error {
     background-position: center center;
 }
 
+.offset {
+    margin-left: 20px;
+}
+
 .profile .button input {
     font-size: 14px;
 }
