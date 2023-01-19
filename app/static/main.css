@@ -93,6 +93,7 @@ req::before {
     top: 40%;
     right: 0;
     height: 70%;
+    z-index: -1;
 }
 
 /* Main */
@@ -100,6 +101,7 @@ req::before {
 .main {
     display: inline-block;
     width: 60%;
+    min-width: 600px;
     height: 100%;
     margin-left: 8%;
 }
@@ -284,7 +286,7 @@ form .field-error {
 
 .profilebar {
     display: inline-block;
-    width: 100%;
+    width: calc(100% - 24px);
     height: 100px;
     padding: 12px;
     background: var(--blue-opaquer);
@@ -386,6 +388,7 @@ form .field-error {
 
 .profile .text {
     display: inline-block;
+    /* width: 160px; */
 }
 
 .profile .field {
@@ -399,13 +402,8 @@ form .field-error {
     margin-left: 20px;
 }
 
-.profile .checkbox {
-    display: inline-block;
-    margin-left: 4px;
-}
-
 .checkbox {
-    visibility: hidden;
+    display: none;
 }
 
 .checkbox + label {
@@ -446,9 +444,105 @@ form .field-error {
 .disabled .field,
 .disabled label {
     pointer-events:none;
-    opacity:0.5;
+    opacity: 0.5;
 }
 
 #invalid-stroke {
     display: inline-block;
+}
+
+.swimmers {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.swimmers thead,
+.swimmers tbody {
+    width: 100%;
+}
+
+.swimmers thead tr,
+.swimmers tbody tr {
+    width: 100%;
+    display: flex;
+}
+
+.swimmers thead th,
+.swimmers tbody td {
+    overflow: clip;
+}
+
+.swimmers thead th {
+    padding: 10px;
+    background-color: var(--blue);
+    color: white;
+}
+
+.swimmers tbody td {
+    text-align: center;
+    display: block;
+    margin: 20px;
+}
+
+.swimmers .name,
+.swimmers .stroke {
+    flex: 4;
+}
+.swimmers .modify {
+    flex: 3;
+}
+
+.swimmers .swimming,
+.swimmers .captain,
+.swimmers .year {
+    flex: 2;
+}
+
+.swimmers .modify {
+    display: table-cell;
+    padding: 0 !important;
+    margin: 0 !important;
+    vertical-align: middle;
+}
+
+.swimmers .modify img {
+    width: 30px;
+    transform: translate(0, 15px);
+}
+
+.swimmers .modify img:hover {
+    outline: 1px solid var(--blue-opaque);
+    cursor: pointer;
+}
+
+.odd {
+    background-color: var(--blue-opaquer);
+}
+
+.blank-add {
+    flex: 12;
+}
+
+.add {
+    flex: 5;
+    margin: 0 !important;
+    padding: 10px;
+    outline: 1px solid var(--blue-opaque);
+}
+
+.add:hover {
+    background-color: var(--blue-opaque);
+    cursor: pointer;
+}
+
+.add a:hover {
+    all: unset;
+    user-select: none;
+}
+
+.add img {
+    width: 30px;
+    vertical-align: middle;
+    display: relative;
 }

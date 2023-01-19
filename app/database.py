@@ -344,6 +344,22 @@ class Database:
         """, (int(value), user_id))
         self.conn.commit()
 
+    def get_students(self, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all students from a school
+        c.execute("""
+            SELECT *
+            FROM User
+            WHERE school_id = ?
+            AND is_coach = 0
+        """, (school_id,))
+        students = c.fetchall()
+
+        return students
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

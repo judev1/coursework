@@ -7,6 +7,7 @@ from flask import send_file
 
 import magic
 import os
+import datetime
 
 # Initiates the Flask object and sets the 'static' folder as the template folder
 app = Flask(__name__, template_folder='static')
@@ -52,6 +53,21 @@ class User:
             self.fav_stroke = details[2]
             self.captain = details[3]
             self.is_swimming = details[4]
+
+    @property
+    def year(self):
+        years = {
+            13: 'XX',
+            12: 'LXX',
+            11: 'D Block',
+            10: 'E Block',
+            9: 'F Block',
+        }
+        diff = datetime.datetime.now().year
+        year = 13 - (self.graduation_year - diff)
+        if year in years:
+            return years[year]
+        return f"{self.graduation_year} Leaver"
 
     def is_admin(self):
         return self.coach or self.captain
@@ -164,6 +180,21 @@ def profile():
     user_id = db.get_user_id(token)
     user = get_user(user_id)
 
+    if user.coach:
+
+        school_id = user.school_id
+        swimmers = map(User, db.get_students(school_id))
+
+        return render_template(
+            'coachprofile.html',
+            main=False,
+            user=user,
+            user_page=user,
+            swimmers=swimmers,
+            active_gala=False,
+            live_gala=False
+        )
+
     return render_template(
         'profile.html',
         main=False,
@@ -186,6 +217,22 @@ def profiles(user_id):
         # Checks if the logged in user is the user
         if user and user.user_id == user_page.user_id:
             return redirect('/profile')
+
+        if user_page.coach:
+
+            # Gets the swimmers of the coach
+            school_id = user_page.school_id
+            swimmers = map(User, db.get_students(school_id))
+
+            return render_template(
+                'coachprofile.html',
+                main=False,
+                user=user,
+                user_page=user_page,
+                swimmers=swimmers,
+                active_gala=False,
+                live_gala=False
+            )
 
         return render_template(
             'profile.html',
@@ -210,9 +257,15 @@ def profile_picture(user_id):
         file = open(filename, 'rb')
         return send_file(file, mime.from_file(filename))
 
+    # Sends the default profile picture if the user is a coach
+    if user.coach:
+        filename = 'app/profile_pictures/coach.png'
+        file = open(filename, 'rb')
+        return send_file(file, 'png')
+
     # Sends the default profile picture if the user is a student
     if not user.coach:
-        filename = 'app/profile_pictures/student.png'
+        filename = 'app/profile_pictures/swimmer.png'
         file = open(filename, 'rb')
         return send_file(file, 'png')
 

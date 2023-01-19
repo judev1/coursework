@@ -1,0 +1,129 @@
+{% extends "template.html" %}
+{% block head %}
+<script src="/static/profile.js"></script>
+<meta name="user_id" content="{{ user_page.user_id }}">
+{% endblock %}
+{% block body %}
+<div class="profilebar">
+    <div class="profilepic">
+        {% if user and user.is_owner(user_page) %}
+        <div class="edit" id="edit">
+            {% if user.has_picture %}
+            <input type="file" id="file" onchange="upload(event)">
+            <label class="top" for="file">change</label>
+            <img src="/static/images/edit.png">
+            <label class="bottom" onclick="remove()">remove</label>
+            {% else %}
+            <img src="/static/images/edit.png">
+            <input type="file" id="file" onchange="upload(event)">
+            <label class="bottom" for="file">add</label>
+            {% endif %}
+        </div>
+        <div class="editable pic">
+        {% else %}
+        <div class="pic">
+        {% endif %}
+            <img class="pic" id="profile_picture"
+                src="/profile/{{ user_page.user_id }}/picture">
+        </div>
+    </div><div class="text">
+        <h1 class="name">{{ user_page.gender }} {{ user_page.surname }}</h1>
+        <h2 class="School">Rugby School</h2>
+    </div>
+</div>
+{% if user and user.is_owner(user_page) %}
+<table class="swimmers">
+    <thead>
+        <tr>
+            <th class="name">Name</th>
+            <th class="year">Year</th>
+            <th class="stroke">Prefered stroke</th>
+            <th class="swimming">Swimming?</th>
+            <th class="captain">Captain?</th>
+            <th class="modify"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set ns = namespace(odd=True) %}
+        {% for swimmer in swimmers %}
+        {% if not ns.odd %}
+        <tr>
+        {% set ns.odd = True %}
+        {% else %}
+        <tr class="odd">
+        {% set ns.odd = False %}
+        {% endif %}
+            <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
+            <td class="year">{{ swimmer.year() }}</td>
+            <td class="stroke">{{ swimmer.fav_stroke.capitalize() }}</td>
+            <td class="swimming disabled">
+                <input class="checkbox" type="checkbox" name="swimming"
+                    {% if swimmer.is_swimming %}checked{% endif %}
+                    /><label for="swimming"></label>
+            </td>
+            <td class="captain disabled">
+                <input class="checkbox" type="checkbox" name="captain"
+                    {% if swimmer.captain %}checked{% endif %}
+                    /><label for="captain"></label>
+            </td>
+            <td class="modify">
+                <img src="/static/images/modify.png"
+                ><img src="/static/images/remove.png">
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not ns.odd %}
+        <tr>
+        {% else %}
+        <tr class="odd">
+        {% endif %}
+            <td class="blank-add">{{ odd }}</td>
+            <td class="add">
+                <a>
+                    <img src="/static/images/add.png">
+                    Add swimmer
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% else %}
+<table class="swimmers">
+    <thead>
+        <tr>
+            <th class="name">Name</th>
+            <th class="year">Year</th>
+            <th class="stroke">Prefered stroke</th>
+            <th class="swimming">Swimming?</th>
+            <th class="captain">Captain?</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set ns = namespace(odd=True) %}
+        {% for swimmer in swimmers %}
+        {% if not ns.odd %}
+        <tr>
+        {% set ns.odd = True %}
+        {% else %}
+        <tr class="odd">
+        {% set ns.odd = False %}
+        {% endif %}
+            <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
+            <td class="year">{{ swimmer.year }}</td>
+            <td class="stroke">{{ swimmer.fav_stroke.capitalize() }}</td>
+            <td class="swimming disabled">
+                <input class="checkbox" type="checkbox" name="swimming"
+                    {% if swimmer.is_swimming %}checked{% endif %}
+                    /><label for="swimming"></label>
+            </td>
+            <td class="captain disabled">
+                <input class="checkbox" type="checkbox" name="captain"
+                    {% if swimmer.captain %}checked{% endif %}
+                    /><label for="captain"></label>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}
