@@ -141,6 +141,15 @@ req::before {
     left: 250px;
 }
 
+/* Universal navbar styles */
+
+.navbar a {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
 /* Normal navbar */
 
 .navnorm {
@@ -151,11 +160,21 @@ req::before {
     height: 100px;
 }
 
-.navnorm .logo {
+.navnorm .logo:hover {
+    all: unset;
+}
+
+.navnorm .logo img {
     position: fixed;
     width: 100px;
     top: 50px;
     z-index: 2;
+    transition: 0.1s;
+}
+
+.navnorm .logo img:hover {
+    transform: scale(1.02);
+    cursor: pointer;
 }
 
 .navnorm .navbar {
@@ -164,15 +183,6 @@ req::before {
     padding: 12px;
     padding-left: calc(8% + 120px);
     background: var(--blue-opaque);
-}
-
-/* Universal navbar styles */
-
-.navbar a {
-    padding-left: 8px;
-    padding-right: 8px;
-    font-size: 20px;
-    text-transform: uppercase;
 }
 
 /* Login styles */
