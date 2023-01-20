@@ -47,10 +47,10 @@
         {% set ns = namespace(odd=True) %}
         {% for swimmer in swimmers %}
         {% if not ns.odd %}
-        <tr>
+        <tr onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
         {% set ns.odd = True %}
         {% else %}
-        <tr class="odd">
+        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
         {% set ns.odd = False %}
         {% endif %}
             <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
@@ -102,10 +102,10 @@
         {% set ns = namespace(odd=True) %}
         {% for swimmer in swimmers %}
         {% if not ns.odd %}
-        <tr>
+        <tr onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
         {% set ns.odd = True %}
         {% else %}
-        <tr class="odd">
+        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
         {% set ns.odd = False %}
         {% endif %}
             <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>

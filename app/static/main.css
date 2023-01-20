@@ -482,6 +482,10 @@ form .field-error {
     display: flex;
 }
 
+.swimmers tbody tr {
+    cursor: pointer;
+}
+
 .swimmers thead th,
 .swimmers tbody td {
     overflow: clip;
