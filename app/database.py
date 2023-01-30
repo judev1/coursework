@@ -158,21 +158,25 @@ class Database:
         # Commits the changes to the database
         self.conn.commit()
 
-    # Checks if the email exists
-    def check_email(self, email):
+    # Gets the user_id from the email
+    def get_user_id_from_email(self, email):
 
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
 
-        # Gets the user_id of the user with the given email
+        # Gets the user_id of the email
         c.execute("""
             SELECT user_id
             FROM User
             WHERE email = ?
         """, (email,))
+        user_id = c.fetchone()[0]
 
-        # Returns true if the user_id is not None
-        return c.fetchone() is not None
+        return user_id
+
+    # Checks if the email exists
+    def used_email(self, email):
+        return self.get_user_id_from_email(email) is None
 
     # Checks if the email and password are valid
     def check_password(self, email, password):
@@ -359,6 +363,40 @@ class Database:
         students = c.fetchall()
 
         return students
+
+    def add_student(self, school_id, email, name, surname, gender, graduation_year, fav_stroke, is_captain, is_swimming):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Generates a random password
+        password = secrets.token_urlsafe(16)
+        # Hashes the password
+        hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Inserts the user into the database
+        c.execute("""
+            INSERT INTO User (school_id, email, hash, name, surname,
+                gender, has_picture, is_coach)
+            VALUES (?, ?, ?, ?, ?, ?, 0, 0)
+        """, (school_id, email, hash, name, surname, gender))
+        self.conn.commit()
+
+        # Gets the user_id of the user
+        c.execute("""
+            SELECT user_id
+            FROM User
+            WHERE email = ?
+        """, (email,))
+
+        user_id = c.fetchone()[0]
+
+        # Inserts the student into the database
+        c.execute("""
+            INSERT INTO Student (user_id, graduation_year, fav_stroke, is_captain, is_swimming)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, graduation_year, fav_stroke, int(is_captain), int(is_swimming)))
+        self.conn.commit()
 
 # If database.py is the file being run
 if __name__ == '__main__':

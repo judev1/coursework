@@ -4,7 +4,7 @@
         <link rel="Shortcut Icon" href="static/images/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="static/main.css">
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-        <script type="text/javascript" src="static/login.js"></script>
+        <script type="text/javascript" src="static/email.js"></script>
         <title>Swimming Portal</title>
     </head>
     <body>
@@ -23,14 +23,13 @@
                 <form onsubmit="return validatefields()" action="/login" method="post">
                     <div class="title">Login</div>
                     <h1 class="text"><req></req>Email</h1>
-                    <input id="email" class="field" type="text" name="email" autocomplete="off"
+                    <input id="email" type="text" name="email" autocomplete="off"
                         placeholder="Please enter your email">
                     <p id="invalid-email" class="field-error">invalid email</p>
                     <br>
                     <h1 class="text"><req></req>Password</h1>
-                    <input id="password" class="field" type="password" name="password" autocomplete="off"
-                        placeholder="Please enter your password">
-                    <p id="empty-password" class="field-error">please enter your password</p>
+                    <input id="password" type="password" name="password" autocomplete="off"
+                        placeholder="Please enter your password" required>
                     <a class="forgot-password" href="/forgot">
                         forgot password?
                     </a>

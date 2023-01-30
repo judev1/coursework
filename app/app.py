@@ -25,7 +25,7 @@ db = Database('app/database.db')
 
 STROKES = [
     'frontcrawl',
-    'backcrawl',
+    'backstroke',
     'breaststroke',
     'butterfly',
     'medley'
@@ -33,6 +33,8 @@ STROKES = [
 
 
 class User:
+
+    strokes = STROKES
 
     def __init__(self, details):
 
@@ -67,7 +69,7 @@ class User:
         year = 13 - (self.graduation_year - diff)
         if year in years:
             return years[year]
-        return f"{self.graduation_year} Leaver"
+        return f'{self.graduation_year} Leaver'
 
     def is_admin(self):
         return self.coach or self.captain
@@ -143,7 +145,7 @@ def login_method():
         email = request.form['email']
 
         # Checks if the email is in the database
-        if not db.check_email(email):
+        if not db.used_email(email):
             return 'Email is not associated with an account'
 
         # Checks if the password has been provided
@@ -368,6 +370,84 @@ def update_details(user_id):
         db.update_is_swimming(user_id, False)
 
     return redirect(f'/profile/{user_id}')
+
+# The route for the add student method
+@app.route('/add_student', methods=['POST'])
+def add_student():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if a coach is addding a student
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the coach has provided a name
+    if 'name' not in request.form:
+        return 'Name not provided', 400
+    name = request.form['name']
+
+    # Checks if the coach has provided a surname
+    if 'surname' not in request.form:
+        return 'Surname not provided', 400
+    surname = request.form['surname']
+
+    # Checks if the coach has provided an email
+    if 'email' not in request.form:
+        return 'Email not provided', 400
+    email = request.form['email']
+
+    # Checks if the email is valid
+    if db.check_email(email):
+        return 'Email already associated with an account', 400
+
+    # Checks if the coach has provided a year
+    if 'year' not in request.form:
+        return 'Year not provided', 400
+    year = request.form['year']
+    if not year.isdigit() and int(year) not in range(9, 14):
+        return 'Year must be a number between 9 and 13', 400
+    graduation_year = datetime.datetime.now().year + 13 - int(year)
+
+    # Checks if the coach has provided a gender
+    if 'gender' not in request.form:
+        return 'Gender not provided', 400
+    gender = request.form['gender']
+    if gender not in ['male', 'female']:
+        return 'Gender must be male or female for groupings', 400
+
+    # Checks if the coach has provided a favourite stroke
+    if 'fav_stroke' not in request.form:
+        return 'Favourite stroke not provided', 400
+    fav_stroke = request.form['fav_stroke']
+    if fav_stroke not in STROKES:
+        return 'Invalid stroke', 400
+
+    # Checks if the coach has provided a swimming status
+    swimming = 'swimming' in request.form
+
+    # Checks if the coach has provided a captain status
+    captain = 'captain' in request.form
+
+    # Adds the student to the database
+    db.add_student(
+        school_id=user.school_id,
+        email=email,
+        name=name,
+        surname=surname,
+        gender=gender,
+        graduation_year=graduation_year,
+        fav_stroke=fav_stroke,
+        is_captain=captain,
+        is_swimming=swimming
+    )
+
+    # Reloads the page
+    return redirect(f'/profile/{user.user_id}')
 
 
 # Checks to see if the current file is the one being run (ie if another file

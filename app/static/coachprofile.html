@@ -1,6 +1,7 @@
 {% extends "template.html" %}
 {% block head %}
-<script src="/static/profile.js"></script>
+<script type="text/javascript" src="/static/profile.js"></script>
+<script type="text/javascript" src="static/email.js"></script>
 <meta name="user_id" content="{{ user_page.user_id }}">
 {% endblock %}
 {% block body %}
@@ -27,7 +28,7 @@
                 src="/profile/{{ user_page.user_id }}/picture">
         </div>
     </div><div class="text">
-        <h1 class="name">{{ user_page.gender }} {{ user_page.surname }}</h1>
+        <h1 class="name">{{ user_page.name }} {{ user_page.surname }}</h1>
         <h2 class="School">Rugby School</h2>
     </div>
 </div>
@@ -37,7 +38,7 @@
         <tr>
             <th class="name">Name</th>
             <th class="year">Year</th>
-            <th class="stroke">Prefered stroke</th>
+            <th class="stroke">Stroke</th>
             <th class="swimming">Swimming?</th>
             <th class="captain">Captain?</th>
             <th class="modify"></th>
@@ -78,22 +79,86 @@
         <tr class="odd">
         {% endif %}
             <td class="blank-add">{{ odd }}</td>
-            <td class="add">
-                <a>
-                    <img src="/static/images/add.png">
-                    Add swimmer
-                </a>
+            <td class="add" onclick="$('#add-student').show()">
+                <img src="/static/images/add.png">
+                Add swimmer
             </td>
         </tr>
     </tbody>
 </table>
+<div id="add-student">
+    <div class="popup">
+        <form onsubmit="return validatefields()" action="/add_student" method="post">
+            <a class="close" onclick="$('#add-student').hide()">
+                <img src="static/images/cross.png">
+                Close
+            </a>
+            <div class="title">New swimmer</div>
+            <div class="input">
+                <h1 class="text"><req></req>Name:</h1>
+                <input type="text" name="name" id="name" placeholder="Adam" required>
+            </div>
+            <div class="input">
+                <h1 class="text"><req></req>Surname:</h1>
+                <input type="text" name="surname" id="surname" placeholder="Apple" required>
+            </div>
+            <div class="input">
+                <h1 class="text"><req></req>Email:</h1>
+                <input type="text" name="email" id="email" placeholder="appam@rugbyschool.net" required>
+            </div>
+            <p id="invalid-email" class="field-error">invalid email</p>
+            <div class="input">
+                <h1 class="text">Year:</h1>
+                <select name="year" id="year">
+                    <option value=13 selected>XX</option>
+                    <option value=12>LXX</option>
+                    <option value=11>D Block</option>
+                    <option value=10>E Block</option>
+                    <option value=9>F Block</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Gender:</h1>
+                <select name="gender" id="gender" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Stroke:</h1>
+                <select name="fav_stroke" id="fav_stroke" required>
+                    <option value="frontcrawl">Frontcrawl</option>
+                    <option value="backstroke">Backstroke</option>
+                    <option value="breaststroke">Breaststroke</option>
+                    <option value="butterfly">Butterfly</option>
+                    <option value="medley">Medley</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Swimming?
+                </h1><input class="checkbox" type="checkbox" id="swimming" name="swimming"
+                    checked="checked"/>
+                <label class="offset" for="swimming"></label>
+            </div>
+            <div class="input">
+                <h1 class="text">Captain?
+                </h1><input class="checkbox" type="checkbox" id="captain" name="captain">
+                <label class="offset" for="captain"></label>
+            </div>
+            <br>
+            <div class="button">
+                <input id="add" type="submit" value="Add swimmer">
+            </div>
+        </form>
+    </div>
+</div>
 {% else %}
 <table class="swimmers">
     <thead>
         <tr>
             <th class="name">Name</th>
             <th class="year">Year</th>
-            <th class="stroke">Prefered stroke</th>
+            <th class="stroke">Stroke</th>
             <th class="swimming">Swimming?</th>
             <th class="captain">Captain?</th>
         </tr>
