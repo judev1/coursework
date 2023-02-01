@@ -170,13 +170,16 @@ class Database:
             FROM User
             WHERE email = ?
         """, (email,))
-        user_id = c.fetchone()[0]
+        result = c.fetchone()
 
-        return user_id
+        if result is None:
+            return None
+
+        return result[0]
 
     # Checks if the email exists
     def used_email(self, email):
-        return self.get_user_id_from_email(email) is None
+        return self.get_user_id_from_email(email) is not None
 
     # Checks if the email and password are valid
     def check_password(self, email, password):
@@ -205,13 +208,8 @@ class Database:
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
 
-        # Gets the user_id from the email
-        c.execute("""
-            SELECT user_id
-            FROM User
-            WHERE email = ?
-        """, (email,))
-        user_id = c.fetchone()[0]
+        # Gets the user_id of the email
+        user_id = self.get_user_id_from_email(email)
 
         # Generates a random token
         token = secrets.token_urlsafe(16)

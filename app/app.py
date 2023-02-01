@@ -8,12 +8,25 @@ from flask import send_file
 import magic
 import os
 import datetime
+import time
+import smtplib
+import json
+
 
 # Initiates the Flask object and sets the 'static' folder as the template folder
 app = Flask(__name__, template_folder='static')
 
 # Creates a new Magic object for getting the file type
 mime = magic.Magic(mime=True)
+
+# Loads the config for the smtp
+with open('config.json') as file:
+    config = json.load(file)
+
+# Connects to the host over SMTP using credentials from the config
+server = smtplib.SMTP(config['host'], config['port'])
+server.starttls()
+server.login(config['email'], config['password'])
 
 
 # Imports the Database object from the database module
@@ -402,7 +415,7 @@ def add_student():
     email = request.form['email']
 
     # Checks if the email is valid
-    if db.check_email(email):
+    if db.used_email(email):
         return 'Email already associated with an account', 400
 
     # Checks if the coach has provided a year
@@ -448,6 +461,51 @@ def add_student():
 
     # Reloads the page
     return redirect(f'/profile/{user.user_id}')
+
+# The route for the forgot password page
+@app.route('/forgot-password', methods=['GET'])
+def forgot_password():
+
+        # Checks if the user is logged in
+        if check_token():
+            return redirect('/')
+
+        return render_template('forgotpassword.html')
+
+# The route for the forgot password method
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password_method():
+
+    # Checks if the user is logged in
+    if check_token():
+        return redirect('/')
+
+    # Checks if the user has provided an email
+    if 'email' not in request.form:
+        return 'Email not provided', 400
+    email = request.form['email']
+
+    # Checks if the email is valid
+    if not db.used_email(email):
+        return 'Email not associated with an account', 400
+
+    # Generates a two hour token
+    token = db.generate_token(email, expiry=time.time() + 60*60*2)
+
+    SUBJECT = 'Password Reset'
+    TEXT = (
+        'Please click the link below to reset your password:\n\n'
+        f'http://localhost:5000/reset-password/{token}\n\n'
+        'This link will expire in two hours.'
+    )
+
+    # Prepares the actual message
+    message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(EMAIL, email, SUBJECT, TEXT)
+
+    # Send the mail
+    server.sendmail(EMAIL, email, message)
+
+    return redirect('/forgot-password')
 
 
 # Checks to see if the current file is the one being run (ie if another file
