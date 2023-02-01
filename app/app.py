@@ -20,7 +20,7 @@ app = Flask(__name__, template_folder='static')
 mime = magic.Magic(mime=True)
 
 # Loads the config for the smtp
-with open('config.json') as file:
+with open('app/config.json') as file:
     config = json.load(file)
 
 # Connects to the host over SMTP using credentials from the config
@@ -500,10 +500,10 @@ def forgot_password_method():
     )
 
     # Prepares the actual message
-    message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(EMAIL, email, SUBJECT, TEXT)
+    message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(config['email'], email, SUBJECT, TEXT)
 
     # Send the mail
-    server.sendmail(EMAIL, email, message)
+    server.sendmail(config['email'], email, message)
 
     return redirect('/forgot-password')
 
