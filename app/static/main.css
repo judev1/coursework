@@ -405,24 +405,26 @@ form .field-error {
     font-size: 20px;
 }
 
-.profile {
+/* Form styles */
+
+.form {
     width: calc(100% - 40px);
     padding: calc(12px + 20px);
 }
 
-.profile .text {
+.form .text {
     display: inline-block;
     /* width: 160px; */
 }
 
-.profile select,
-.profile input[type=text] {
+.form select,
+.form input[type=text] {
     display: inline-block;
     width: 200px;
 }
 
-.profile select,
-.profile input[type=text] {
+.form select,
+.form input[type=text] {
     display: inline-block;
     width: 100px;
     margin-left: 20px;
@@ -467,7 +469,7 @@ input[type=checkbox]:checked + label::after {
     margin-left: 20px;
 }
 
-.profile .button input {
+.form .button input {
     font-size: 14px;
 }
 

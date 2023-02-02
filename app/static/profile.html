@@ -31,7 +31,7 @@
         <h2 class="School">Rugby School</h2>
     </div>
 </div>
-<div class="profile">
+<div class="form">
     {% if user and user.is_owner(user_page) %}
     <form action="/profile/{{ user_page.user_id }}/update" method="post">
         <h1 class="text">Favourite Stroke:
