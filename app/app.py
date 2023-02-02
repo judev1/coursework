@@ -8,7 +8,6 @@ from flask import send_file
 import magic
 import os
 import datetime
-import time
 import smtplib
 import json
 
@@ -123,6 +122,20 @@ def get_logged_in_user():
         user_id = db.get_user_id(token)
         return get_user(user_id)
 
+# Checks if a password is valid
+def check_password(password):
+    if len(password) < 8:
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not any(char.isupper() for char in password):
+        return False
+    if not any(char.islower() for char in password):
+        return False
+    if not any(not char.isalnum() for char in password):
+        return False
+    return True
+
 
 # The route for the main page
 @app.route('/', methods=['GET'])
@@ -172,7 +185,7 @@ def login_method():
                 return 'Password is incorrect'
 
             # If the email and password pass all the checks
-            expiry = 59*60*24*7
+            expiry = 60*60*24*7 - 60
             token = db.generate_token(email, expiry)
 
             response = redirect('/')
@@ -490,7 +503,7 @@ def forgot_password_method():
         return 'Email not associated with an account', 400
 
     # Generates a two hour token
-    token = db.generate_token(email, expiry=time.time() + 60*60*2)
+    token = db.generate_token(email, expiry=60*60*2)
 
     SUBJECT = 'Password Reset'
     TEXT = (
@@ -506,6 +519,51 @@ def forgot_password_method():
     server.sendmail(config['email'], email, message)
 
     return redirect('/forgot-password')
+
+# The route for the reset password page
+@app.route('/reset-password/<token>', methods=['GET'])
+def reset_password(token):
+
+    # Checks if the user is logged in
+    if check_token():
+        return redirect('/')
+
+    # Checks if the token is valid
+    if not db.check_token(token):
+        return 'Invalid token', 400
+
+    return render_template('resetpassword.html')
+
+# The route for the reset password method
+@app.route('/reset-password/<token>', methods=['POST'])
+def reset_password_method(token):
+
+    # Checks if the user is logged in
+    if check_token():
+        return redirect('/')
+
+    # Checks if the token is valid
+    if not db.check_token(token):
+        return 'Invalid token', 400
+
+    # Checks if the user has provided a password
+    if 'password' not in request.form:
+        return 'Password not provided', 400
+    password = request.form['password']
+
+    # Checks if the password is valid
+    if not check_password(password):
+        return 'Invalid password', 400
+
+    # Gets the user's id from the token
+    user_id = db.get_user_id(token)
+
+    # Updates the user's password
+    db.update_password(user_id, password)
+
+    # Should realistically delete the token but I'm too lazy to do that
+
+    return redirect('/login')
 
 
 # Checks to see if the current file is the one being run (ie if another file

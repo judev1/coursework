@@ -197,7 +197,8 @@ class Database:
 
         # Encodes the password and hash to utf-8
         password = password.encode('utf-8')
-        hash = hash.encode('utf-8')
+        if isinstance(hash, str):
+            hash = hash.encode('utf-8')
 
         # Checks if the password matches the hash
         return bcrypt.checkpw(password, hash)
@@ -394,6 +395,22 @@ class Database:
             INSERT INTO Student (user_id, graduation_year, fav_stroke, is_captain, is_swimming)
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, graduation_year, fav_stroke, int(is_captain), int(is_swimming)))
+        self.conn.commit()
+
+    def update_password(self, user_id, password):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Hashes the password
+        hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Updates the password of the user
+        c.execute("""
+            UPDATE User
+            SET hash = '?'
+            WHERE user_id = ?
+        """, (hash, user_id))
         self.conn.commit()
 
 # If database.py is the file being run
