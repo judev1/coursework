@@ -23,9 +23,9 @@ with open('app/config.json') as file:
     config = json.load(file)
 
 # Connects to the host over SMTP using credentials from the config
-server = smtplib.SMTP(config['host'], config['port'])
-server.starttls()
-server.login(config['email'], config['password'])
+# server = smtplib.SMTP(config['host'], config['port'])
+# server.starttls()
+# server.login(config['email'], config['password'])
 
 
 # Imports the Database object from the database module
