@@ -392,7 +392,8 @@ class Database:
 
         # Inserts the student into the database
         c.execute("""
-            INSERT INTO Student (user_id, graduation_year, fav_stroke, is_captain, is_swimming)
+            INSERT INTO Student (user_id, graduation_year, fav_stroke,
+            is_captain, is_swimming)
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, graduation_year, fav_stroke, int(is_captain), int(is_swimming)))
         self.conn.commit()
@@ -412,6 +413,47 @@ class Database:
             WHERE user_id = ?
         """, (hash, user_id))
         self.conn.commit()
+
+    def get_other_schools(self, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all schools except the current school
+        c.execute("""
+            SELECT *
+            FROM School
+            WHERE school_id != ?
+        """, (school_id,))
+        schools = c.fetchall()
+
+        return schools
+
+    def add_gala(self, host_id, guest_id, date):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Inserts the gala into the database
+        c.execute("""
+            INSERT INTO Gala (
+                home_school_id, guest_school_id, date, is_active, is_live)
+            VALUES (?, ?, ?, 1, 0)
+        """, (host_id, guest_id, date))
+        self.conn.commit()
+
+    def get_school(self, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Checks if the school exists
+        c.execute("""
+            SELECT *
+            FROM School
+            WHERE school_id = ?
+        """, (school_id,))
+        return c.fetchone()
 
 # If database.py is the file being run
 if __name__ == '__main__':

@@ -1,0 +1,29 @@
+{% extends "template.html" %}
+{% block head %}
+{% endblock %}
+{% block body %}
+<div class="form">
+    <h1 class="title spacy">Create a new gala</h1>
+    <form action="/create" method="post">
+        <h1 class="text">Competing school:
+        <select name="school_id" required>
+            {% for school in schools %}
+            <option value={{ school.school_id }}>
+                {{ school.name|capitalize }}
+            </option>
+            {% endfor %}
+        </select>
+        </h1>
+        <br><br>
+        <h1 class="text">Home match:
+        </h1><input class="checkbox" type="checkbox" id="home" name="home" checked/>
+        <label class="offset" for="home"></label>
+        <br><br>
+        <h1 class="text">Match date:</h1><input type="date" name="date" required>
+        <br><br><br>
+        <div class="button">
+            <input type="submit" value="Create">
+        </div>
+    </form>
+</div>
+{% endblock %}

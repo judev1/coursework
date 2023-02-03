@@ -91,6 +91,13 @@ class User:
         owner = self.user_id == user.user_id
         return coach or owner
 
+class School:
+
+    def __init__(self, details):
+
+        self.school_id = details[0]
+        self.name = details[1]
+
 # Checks a user's token
 def check_token():
 
@@ -508,7 +515,7 @@ def forgot_password_method():
     SUBJECT = 'Password Reset'
     TEXT = (
         'Please click the link below to reset your password:\n\n'
-        f'http://localhost:5000/reset-password/{token}\n\n'
+        f'http://127.0.0.1:5000/reset-password/{token}\n\n'
         'This link will expire in two hours.'
     )
 
@@ -564,6 +571,79 @@ def reset_password_method(token):
     # Should realistically delete the token but I'm too lazy to do that
 
     return redirect('/login')
+
+# The route for the create gala page
+@app.route('/create', methods=['GET'])
+def create_gala():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Gets the list of schools
+    schools = map(School, db.get_other_schools(user.school_id))
+
+    return render_template(
+        'creategala.html',
+        main=False,
+        user=get_logged_in_user(),
+        active_gala=False,
+        live_gala=False,
+        schools=schools
+    )
+
+# The route for the create gala method
+@app.route('/create', methods=['POST'])
+def create_gala_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided a school_id
+    if 'school_id' not in request.form:
+        return 'School not provided', 400
+    school_id = request.form['school_id']
+
+    # Checks if the school is valid
+    if not db.get_school(school_id):
+        return 'Invalid school', 400
+
+    # Checks if the user has provided a home value
+    home = 'home' in request.form
+
+    # Sets the host and guest ids
+    if home:
+        host_id = user.school_id
+        guest_id = school_id
+    else:
+        host_id = school_id
+        guest_id = user.school_id
+
+    # Checks if the user has provided a date
+    if 'date' not in request.form:
+        return 'Date not provided', 400
+    date = request.form['date']
+
+    # Adds the gala to the database
+    db.add_gala(host_id, guest_id, date)
+
+    # Redirects to the manage page
+    return redirect('/manage')
 
 
 # Checks to see if the current file is the one being run (ie if another file
