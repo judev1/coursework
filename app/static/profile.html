@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 {% block head %}
 <script type="text/javascript" src="/static/profile.js"></script>
-<meta name="user_id" content="{{ user_page.user_id }}">
+<meta name="user_id" content="{{ user_page.id }}">
 {% endblock %}
 {% block body %}
 <div class="profilebar">
@@ -24,7 +24,7 @@
         <div class="pic">
         {% endif %}
             <img class="pic" id="profile_picture"
-                src="/profile/{{ user_page.user_id }}/picture">
+                src="/profile/{{ user_page.id }}/picture">
         </div>
     </div><div class="text">
         <h1 class="name">{{ user_page.name }} {{ user_page.surname }}</h1>
@@ -33,7 +33,7 @@
 </div>
 <div class="form">
     {% if user and user.is_owner(user_page) %}
-    <form action="/profile/{{ user_page.user_id }}/update" method="post">
+    <form action="/profile/{{ user_page.id }}/update" method="post">
         <h1 class="text">Favourite Stroke:
         <select name="fav_stroke">
             {% set fav_stroke = user_page.fav_stroke %}

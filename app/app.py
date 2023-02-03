@@ -50,8 +50,8 @@ class User:
 
     def __init__(self, details):
 
-        self.user_id = details[0]
-        self.school_id = details[1]
+        self.id = details[0]
+        self.school = School(db.get_school(details[1]))
         self.email = details[2]
 
         self.name = details[4]
@@ -62,7 +62,7 @@ class User:
 
         if not self.coach:
 
-            details = db.get_student(self.user_id)
+            details = db.get_student(self.id)
             self.graduation_year = details[1]
             self.fav_stroke = details[2]
             self.captain = details[3]
@@ -88,14 +88,14 @@ class User:
 
     def is_owner(self, user):
         coach = self.coach and self.school_id == user.school_id
-        owner = self.user_id == user.user_id
+        owner = self.id == user.id
         return coach or owner
 
 class School:
 
     def __init__(self, details):
 
-        self.school_id = details[0]
+        self.id = details[0]
         self.name = details[1]
 
 # Checks a user's token
@@ -250,7 +250,7 @@ def profiles(user_id):
         user = get_logged_in_user()
 
         # Checks if the logged in user is the user
-        if user and user.user_id == user_page.user_id:
+        if user and user.id == user_page.id:
             return redirect('/profile')
 
         if user_page.coach:
@@ -480,7 +480,7 @@ def add_student():
     )
 
     # Reloads the page
-    return redirect(f'/profile/{user.user_id}')
+    return redirect(f'/profile/{user.id}')
 
 # The route for the forgot password page
 @app.route('/forgot-password', methods=['GET'])
@@ -644,7 +644,6 @@ def create_gala_method():
 
     # Redirects to the manage page
     return redirect('/manage')
-
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

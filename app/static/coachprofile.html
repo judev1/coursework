@@ -2,7 +2,7 @@
 {% block head %}
 <script type="text/javascript" src="/static/profile.js"></script>
 <script type="text/javascript" src="static/email.js"></script>
-<meta name="user_id" content="{{ user_page.user_id }}">
+<meta name="user_id" content="{{ user_page.id }}">
 {% endblock %}
 {% block body %}
 <div class="profilebar">
@@ -25,7 +25,7 @@
         <div class="pic">
         {% endif %}
             <img class="pic" id="profile_picture"
-                src="/profile/{{ user_page.user_id }}/picture">
+                src="/profile/{{ user_page.id }}/picture">
         </div>
     </div><div class="text">
         <h1 class="name">{{ user_page.name }} {{ user_page.surname }}</h1>
@@ -48,10 +48,10 @@
         {% set ns = namespace(odd=True) %}
         {% for swimmer in swimmers %}
         {% if not ns.odd %}
-        <tr onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
+        <tr onclick="window.location.href='/profile/{{ swimmer.id }}'">
         {% set ns.odd = True %}
         {% else %}
-        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
+        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.id }}'">
         {% set ns.odd = False %}
         {% endif %}
             <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
@@ -167,10 +167,10 @@
         {% set ns = namespace(odd=True) %}
         {% for swimmer in swimmers %}
         {% if not ns.odd %}
-        <tr onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
+        <tr onclick="window.location.href='/profile/{{ swimmer.id }}'">
         {% set ns.odd = True %}
         {% else %}
-        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.user_id }}'">
+        <tr class="odd" onclick="window.location.href='/profile/{{ swimmer.id }}'">
         {% set ns.odd = False %}
         {% endif %}
             <td class="name">{{ swimmer.name }} {{ swimmer.surname }}</td>
