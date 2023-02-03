@@ -231,6 +231,7 @@ form .text {
 
 form input[type=text],
 form input[type=password],
+form input[type=date],
 form select {
     display: block;
     width: calc(100% - 16px);
@@ -243,12 +244,14 @@ form select {
 
 form input[type=text]:hover,
 form input[type=password]:hover,
+form input[type=date]:hover,
 form select:hover {
     outline: 1px solid var(--blue);
 }
 
 form input[type=text]:focus,
 form input[type=password]:focus,
+form input[type=date]:focus,
 form select:focus {
     outline: 2px solid var(--blue);
 }
@@ -418,13 +421,15 @@ form .field-error {
 }
 
 .form select,
-.form input[type=text] {
+.form input[type=text],
+.form input[type=date] {
     display: inline-block;
     width: 200px;
 }
 
 .form select,
-.form input[type=text] {
+.form input[type=text],
+.form input[type=date] {
     display: inline-block;
     width: 100px;
     margin-left: 20px;
@@ -685,4 +690,8 @@ input[type=checkbox]:checked + label::after {
 
 .close img {
     width: 8px;
+}
+
+.title.spacy {
+    margin-bottom: 30px;
 }
