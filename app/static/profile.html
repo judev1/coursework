@@ -32,7 +32,7 @@
     </div>
 </div>
 <div class="form">
-    {% if user and user.is_owner(user_page) %}
+    {% if user and user.can_edit(user_page) %}
     <form action="/profile/{{ user_page.id }}/update" method="post">
         <h1 class="text">Favourite Stroke:
         <select name="fav_stroke">

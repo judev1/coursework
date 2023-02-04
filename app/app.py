@@ -57,8 +57,8 @@ class User:
         self.name = details[4]
         self.surname = details[5]
         self.gender = details[6]
-        self.has_picture = details[7]
-        self.coach = details[8]
+        self.has_picture = bool(details[7])
+        self.coach = bool(details[8])
 
         if not self.coach:
 
@@ -86,10 +86,13 @@ class User:
     def is_admin(self):
         return self.coach or self.captain
 
-    def is_owner(self, user):
-        coach = self.coach and self.id == user.school.id
-        owner = self.id == user.id
-        return coach or owner
+    def can_edit(self, page):
+        print(self.coach, self.id, page.school.id, type(self.coach), type(self.id), type(page.school.id))
+        return self.coach and self.school.id == page.school.id
+
+    def is_owner(self, page):
+        owner = self.id == page.id
+        return self.can_edit(page) or owner
 
     def is_host(self, gala):
         return self.school.id == gala.host.id
@@ -110,8 +113,8 @@ class Gala:
         self.guest = School(db.get_school(details[2]))
         self.date = details[3]
 
-        self.is_active = details[4]
-        self.is_live = details[5]
+        self.active = bool(details[4])
+        self.live = bool(details[5])
 
 # Checks a user's token
 def check_token():
@@ -682,7 +685,7 @@ def manage():
         'managegala.html',
         main=False,
         user=get_logged_in_user(),
-        active_gala=bool(gala.is_active),
+        active_gala=gala.active,
         live_gala=False,
         gala=gala,
         schools=schools
