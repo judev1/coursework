@@ -469,6 +469,19 @@ class Database:
         """)
         return c.fetchone()
 
+    def update_gala(self, gala_id, host_id, guest_id, date):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the gala
+        c.execute("""
+            UPDATE Gala
+            SET home_school_id = ?, guest_school_id = ?, date = ?
+            WHERE gala_id = ?
+        """, (host_id, guest_id, date, gala_id))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

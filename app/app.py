@@ -688,6 +688,56 @@ def manage():
         schools=schools
     )
 
+# The route for the update gala method
+@app.route('/update_gala', methods=['POST'])
+def update_gala_method():
+
+        # Checks if the user is logged in
+        if not check_token():
+            return redirect('/login')
+
+        token = request.cookies['token']
+        user = get_user(db.get_user_id(token))
+
+        # Checks if the user is a coach
+        if not user.coach:
+            return 'You do not have permission to do this', 403
+
+        # Checks if the user has provided a school_id
+        if 'school_id' not in request.form:
+            return 'School not provided', 400
+        school_id = request.form['school_id']
+
+        # Checks if the school is valid
+        if not db.get_school(school_id):
+            return 'Invalid school', 400
+
+        # Checks if the user has provided a home value
+        home = 'home' in request.form
+
+        # Sets the host and guest ids
+        if home:
+            host_id = user.school.id
+            guest_id = school_id
+        else:
+            host_id = school_id
+            guest_id = user.school.id
+
+        # Checks if the user has provided a date
+        if 'date' not in request.form:
+            return 'Date not provided', 400
+        date = request.form['date']
+
+        # Gets the gala_id
+        gala_id = db.get_upcoming_gala()[0]
+
+        # Updates the gala in the database
+        db.update_gala(gala_id, host_id, guest_id, date)
+
+        # Redirects to the manage page
+        return redirect('/manage')
+
+
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
 # by itself for debugging)

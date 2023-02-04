@@ -1,5 +1,6 @@
 {% extends "template.html" %}
 {% block head %}
+<script type="text/javascript" src="/static/manage.js"></script>
 {% endblock %}
 {% block body %}
 <div class="form">
@@ -15,7 +16,7 @@
     </tbody>
 </table>
 <form class="sidebar form">
-    <select name="school_id" value={{ gala.host.name }} required>
+    <select id="school_id" value={{ gala.host.name }} onchange="update_gala(event)" required>
         {% for school in schools %}
         <option value={{ school.id }}>
             {{ school.name|capitalize }}
@@ -24,12 +25,12 @@
     </select>
     <br><br>
     <h1 class="text">Home match:
-    </h1><input class="checkbox" type="checkbox" id="home" name="home"
+    </h1><input class="checkbox" type="checkbox" id="home"
         {% if user.is_host(gala) %}checked{% endif %}/>
     <label class="offset" for="home"></label>
     <br><br>
     <h1 class="text">Date:
-    </h1><input type="date" class="date" value={{ gala.date }}>
+    </h1><input id="date" type="date" class="date" value={{ gala.date }}>
     <br><br>
     <div class="button">
         <input type="submit" value="Add lane">
