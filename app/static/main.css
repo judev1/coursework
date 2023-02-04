@@ -695,3 +695,40 @@ input[type=checkbox]:checked + label::after {
 .title.spacy {
     margin-bottom: 30px;
 }
+
+.sidebar {
+    position: fixed;
+    right: 8%;
+    top: 50%;
+    width: 200px;
+    background: var(--grey);
+    z-index: 1;
+    text-align: center;
+    transform: translateY(-50%);
+    border-radius: 8px;
+}
+
+.sidebar select[name=school_id] {
+    margin-left: 0;
+}
+
+.sidebar .button {
+    margin-top: 20px;
+}
+
+.red.button input {
+    background: var(--red);
+    color: white;
+}
+
+.red.button input:hover {
+    outline: 1px solid black;
+}
+
+.red.button input:active {
+    outline: 2px solid black;
+}
+
+.sidebar.form input.date[type="date"] {
+    width: 105px;
+}

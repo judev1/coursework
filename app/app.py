@@ -87,9 +87,12 @@ class User:
         return self.coach or self.captain
 
     def is_owner(self, user):
-        coach = self.coach and self.school_id == user.school_id
+        coach = self.coach and self.id == user.school.id
         owner = self.id == user.id
         return coach or owner
+
+    def is_host(self, gala):
+        return self.school.id == gala.host.id
 
 class School:
 
@@ -97,6 +100,18 @@ class School:
 
         self.id = details[0]
         self.name = details[1]
+
+class Gala:
+
+    def __init__(self, details):
+
+        self.id = details[0]
+        self.host = School(db.get_school(details[1]))
+        self.guest = School(db.get_school(details[2]))
+        self.date = details[3]
+
+        self.is_active = details[4]
+        self.is_live = details[5]
 
 # Checks a user's token
 def check_token():
@@ -151,7 +166,7 @@ def main():
         'template.html',
         main=True,
         user=get_logged_in_user(),
-        active_gala=False,
+        active_gala=bool(db.get_upcoming_gala()),
         live_gala=False
     )
 
@@ -217,7 +232,7 @@ def profile():
 
     if user.coach:
 
-        school_id = user.school_id
+        school_id = user.school.id
         swimmers = map(User, db.get_students(school_id))
 
         return render_template(
@@ -226,7 +241,7 @@ def profile():
             user=user,
             user_page=user,
             swimmers=swimmers,
-            active_gala=False,
+            active_gala=bool(db.get_upcoming_gala()),
             live_gala=False
         )
 
@@ -235,7 +250,7 @@ def profile():
         main=False,
         user=user,
         user_page=user,
-        active_gala=False,
+        active_gala=bool(db.get_upcoming_gala()),
         live_gala=False
     )
 
@@ -256,7 +271,7 @@ def profiles(user_id):
         if user_page.coach:
 
             # Gets the swimmers of the coach
-            school_id = user_page.school_id
+            school_id = user_page.school.id
             swimmers = map(User, db.get_students(school_id))
 
             return render_template(
@@ -265,7 +280,7 @@ def profiles(user_id):
                 user=user,
                 user_page=user_page,
                 swimmers=swimmers,
-                active_gala=False,
+                active_gala=bool(db.get_upcoming_gala()),
                 live_gala=False
             )
 
@@ -274,7 +289,7 @@ def profiles(user_id):
             main=False,
             user=user,
             user_page=user_page,
-            active_gala=False,
+            active_gala=bool(db.get_upcoming_gala()),
             live_gala=False
     )
 
@@ -468,7 +483,7 @@ def add_student():
 
     # Adds the student to the database
     db.add_student(
-        school_id=user.school_id,
+        school_id=user.school.id,
         email=email,
         name=name,
         surname=surname,
@@ -588,13 +603,13 @@ def create_gala():
         return 'You do not have permission to do this', 403
 
     # Gets the list of schools
-    schools = map(School, db.get_other_schools(user.school_id))
+    schools = map(School, db.get_other_schools(user.school.id))
 
     return render_template(
         'creategala.html',
         main=False,
         user=get_logged_in_user(),
-        active_gala=False,
+        active_gala=bool(db.get_upcoming_gala()),
         live_gala=False,
         schools=schools
     )
@@ -628,11 +643,11 @@ def create_gala_method():
 
     # Sets the host and guest ids
     if home:
-        host_id = user.school_id
+        host_id = user.school.id
         guest_id = school_id
     else:
         host_id = school_id
-        guest_id = user.school_id
+        guest_id = user.school.id
 
     # Checks if the user has provided a date
     if 'date' not in request.form:
@@ -644,6 +659,34 @@ def create_gala_method():
 
     # Redirects to the manage page
     return redirect('/manage')
+
+# The route for the manage page
+@app.route('/manage', methods=['GET'])
+def manage():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    gala = Gala(db.get_upcoming_gala())
+    schools = map(School, db.get_other_schools(user.school.id))
+
+    return render_template(
+        'managegala.html',
+        main=False,
+        user=get_logged_in_user(),
+        active_gala=bool(gala.is_active),
+        live_gala=False,
+        gala=gala,
+        schools=schools
+    )
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

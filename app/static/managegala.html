@@ -1,0 +1,44 @@
+{% extends "template.html" %}
+{% block head %}
+{% endblock %}
+{% block body %}
+<div class="form">
+    <h1 class="title spacy">Manage gala</h1>
+</div>
+<table class="manage">
+    <thead>
+        <tr>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<form class="sidebar form">
+    <select name="school_id" value={{ gala.host.name }} required>
+        {% for school in schools %}
+        <option value={{ school.id }}>
+            {{ school.name|capitalize }}
+        </option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <h1 class="text">Home match:
+    </h1><input class="checkbox" type="checkbox" id="home" name="home"
+        {% if user.is_host(gala) %}checked{% endif %}/>
+    <label class="offset" for="home"></label>
+    <br><br>
+    <h1 class="text">Date:
+    </h1><input type="date" class="date" value={{ gala.date }}>
+    <br><br>
+    <div class="button">
+        <input type="submit" value="Add lane">
+    </div>
+    <div class="button">
+        <input type="submit" value="Add event">
+    </div>
+    <div class="red button">
+        <input type="submit" value="Make live">
+    </div>
+    </form>
+{% endblock %}

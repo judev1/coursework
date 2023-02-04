@@ -8,7 +8,7 @@
         <h1 class="text">Competing school:
         <select name="school_id" required>
             {% for school in schools %}
-            <option value={{ school.school_id }}>
+            <option value={{ school.id }}>
                 {{ school.name|capitalize }}
             </option>
             {% endfor %}

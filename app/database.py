@@ -455,6 +455,20 @@ class Database:
         """, (school_id,))
         return c.fetchone()
 
+    def get_upcoming_gala(self):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the current gala
+        c.execute("""
+            SELECT *
+            FROM Gala
+            WHERE is_active = 1 AND is_live = 0
+            ORDER BY date DESC
+        """)
+        return c.fetchone()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db
