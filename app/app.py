@@ -100,7 +100,6 @@ class User:
 class School:
 
     def __init__(self, details):
-
         self.id = details[0]
         self.name = details[1]
 
@@ -110,11 +109,12 @@ class Gala:
 
         self.id = details[0]
         self.host = School(db.get_school(details[1]))
-        self.guest = School(db.get_school(details[2]))
-        self.date = details[3]
 
-        self.active = bool(details[4])
-        self.live = bool(details[5])
+        self.date = details[2]
+        self.status = details[3]
+
+        self.school_ids = db.get_gala_schools(self.id)
+        self.schools = map(School, map(db.get_school, self.school_ids))
 
 # Checks a user's token
 def check_token():
@@ -169,8 +169,7 @@ def main():
         'template.html',
         main=True,
         user=get_logged_in_user(),
-        active_gala=bool(db.get_upcoming_gala()),
-        live_gala=False
+        status=db.get_gala_status()
     )
 
 # The route for the login page
@@ -244,8 +243,7 @@ def profile():
             user=user,
             user_page=user,
             swimmers=swimmers,
-            active_gala=bool(db.get_upcoming_gala()),
-            live_gala=False
+            status=db.get_gala_status()
         )
 
     return render_template(
@@ -253,8 +251,7 @@ def profile():
         main=False,
         user=user,
         user_page=user,
-        active_gala=bool(db.get_upcoming_gala()),
-        live_gala=False
+        status=db.get_gala_status()
     )
 
 # The route for the profile pages
@@ -283,8 +280,7 @@ def profiles(user_id):
                 user=user,
                 user_page=user_page,
                 swimmers=swimmers,
-                active_gala=bool(db.get_upcoming_gala()),
-                live_gala=False
+                status=db.get_gala_status()
             )
 
         return render_template(
@@ -292,8 +288,7 @@ def profiles(user_id):
             main=False,
             user=user,
             user_page=user_page,
-            active_gala=bool(db.get_upcoming_gala()),
-            live_gala=False
+            status=db.get_gala_status()
     )
 
     return 'Invalid user id'
@@ -605,15 +600,18 @@ def create_gala():
     if not user.coach:
         return 'You do not have permission to do this', 403
 
+    # Checks if there is already an active gala
+    if db.get_gala_status():
+        return redirect('/manage')
+
     # Gets the list of schools
-    schools = map(School, db.get_other_schools(user.school.id))
+    schools = list(map(School, db.get_other_schools(user.school.id)))
 
     return render_template(
         'creategala.html',
         main=False,
         user=get_logged_in_user(),
-        active_gala=bool(db.get_upcoming_gala()),
-        live_gala=False,
+        status=db.get_gala_status(),
         schools=schools
     )
 
@@ -632,25 +630,32 @@ def create_gala_method():
     if not user.coach:
         return 'You do not have permission to do this', 403
 
-    # Checks if the user has provided a school_id
-    if 'school_id' not in request.form:
-        return 'School not provided', 400
-    school_id = request.form['school_id']
+    # Checks if there is already an active gala
+    if db.get_gala_status():
+        return 'There is already an active gala', 400
 
-    # Checks if the school is valid
-    if not db.get_school(school_id):
-        return 'Invalid school', 400
+    # Checks if the user has provided schools
+    if 'schools' not in request.form:
+        return 'Schools not provided', 400
+    schools = request.form['schools']
 
-    # Checks if the user has provided a home value
-    home = 'home' in request.form
+    # Checks if the user has provided schools as a list
+    if type(schools) == str:
+        schools = [schools]
 
-    # Sets the host and guest ids
-    if home:
-        host_id = user.school.id
-        guest_id = school_id
-    else:
-        host_id = school_id
-        guest_id = user.school.id
+    # Checks if the schools are valid
+    for school_id in schools:
+        if not db.get_school(school_id):
+            return 'Invalid school', 400
+
+    # Checks if the user has provided a host_id
+    if 'host' not in request.form:
+        return 'Host not provided', 400
+    host_id = request.form['host']
+
+    # Checks if the host is valid
+    if not db.get_school(host_id):
+        return 'Invalid host', 400
 
     # Checks if the user has provided a date
     if 'date' not in request.form:
@@ -658,7 +663,13 @@ def create_gala_method():
     date = request.form['date']
 
     # Adds the gala to the database
-    db.add_gala(host_id, guest_id, date)
+    db.add_gala(host_id, date)
+    gala = Gala(db.get_upcoming_gala())
+
+    # Adds the schools to the gala
+    db.add_gala_school(gala.id, user.school.id)
+    for school_id in schools:
+        db.add_gala_school(gala.id, school_id)
 
     # Redirects to the manage page
     return redirect('/manage')
@@ -685,8 +696,7 @@ def manage():
         'managegala.html',
         main=False,
         user=get_logged_in_user(),
-        active_gala=gala.active,
-        live_gala=False,
+        status=db.get_gala_status(),
         gala=gala,
         schools=schools
     )
@@ -706,25 +716,25 @@ def update_gala_method():
         if not user.coach:
             return 'You do not have permission to do this', 403
 
-        # Checks if the user has provided a school_id
-        if 'school_id' not in request.form:
-            return 'School not provided', 400
-        school_id = request.form['school_id']
+        # Checks if the user has provided a school
+        if 'schools' not in request.form:
+            return 'Schools not provided', 400
+        schools = request.form['schools'].split(',')
 
-        # Checks if the school is valid
-        if not db.get_school(school_id):
-            return 'Invalid school', 400
+        # Checks if the schools are valid
+        for school_id in schools:
+            print(school_id, type(school_id))
+            if not db.get_school(int(school_id)):
+                return 'Invalid school', 400
 
-        # Checks if the user has provided a home value
-        home = 'home' in request.form
+        # Checks if the user has provided a host_id
+        if 'host' not in request.form:
+            return 'Host not provided', 400
+        host_id = request.form['host']
 
-        # Sets the host and guest ids
-        if home:
-            host_id = user.school.id
-            guest_id = school_id
-        else:
-            host_id = school_id
-            guest_id = user.school.id
+        # Checks if the host is valid
+        if not db.get_school(host_id):
+            return 'Invalid host', 400
 
         # Checks if the user has provided a date
         if 'date' not in request.form:
@@ -735,7 +745,18 @@ def update_gala_method():
         gala_id = db.get_upcoming_gala()[0]
 
         # Updates the gala in the database
-        db.update_gala(gala_id, host_id, guest_id, date)
+        db.update_gala(gala_id, host_id, date)
+
+        # Removes the schools from the gala
+        gala_schools = db.get_gala_schools(gala_id)
+        for school_id in gala_schools:
+            if school_id != user.school.id and school_id not in schools:
+                db.remove_gala_school(gala_id, school_id)
+
+        # Adds the schools to the gala
+        for school_id in schools:
+            if school_id not in gala_schools:
+                db.add_gala_school(gala_id, school_id)
 
         # Redirects to the manage page
         return redirect('/manage')

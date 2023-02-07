@@ -1,4 +1,4 @@
-{% if active_gala %}
+{% if status == 1 %}
 {% if user and user.is_admin() %}
 <!-- Displays if there is an active gala and the user is an admin -->
 <a href="/manage">
@@ -10,7 +10,7 @@
 	Current Gala
 </a>
 {% endif %}
-{% elif live_gala %}
+{% elif status == 2 %}
 {% if user and user.is_admin() %}
 <!-- Displays if there is a live gala and the user is an admin -->
 <!-- There cannot be an active an a live Gala at the same time -->

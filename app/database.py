@@ -63,15 +63,25 @@ class Database:
         c.execute("""
             CREATE TABLE Gala (
                 gala_id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                home_school_id  INTEGER NOT NULL,
-                guest_school_id INTEGER NOT NULL,
+                host_id         INTEGER NOT NULL,
 
                 date            TEXT    NOT NULL,
-                is_active       INTEGER NOT NULL,
-                is_live         INTEGER NOT NULL,
+	            status          INTEGER NOT NULL,
 
-                FOREIGN KEY (home_school_id) REFERENCES School (school_id),
-                FOREIGN KEY (guest_school_id) REFERENCES School (school_id)
+	            FOREIGN KEY (host_id) REFERENCES School (school_id)
+            );
+        """)
+
+        c.execute("""
+            CREATE TABLE Gala_School (
+                gala_id         INTEGER NOT NULL,
+                school_id       INTEGER NOT NULL,
+
+                host            TEXT    NOT NULL,
+
+                PRIMARY KEY (gala_id, school_id),
+                FOREIGN KEY (gala_id) REFERENCES Gala (gala_id),
+                FOREIGN KEY (school_id) REFERENCES School (school_id)
             );
         """)
 
@@ -104,9 +114,20 @@ class Database:
                 gala_id         INTEGER  NOT NULL,
 
                 lane_no         INTEGER  NOT NULL,
-                volunteer_code  TEXT     NOT NULL,
 
                 FOREIGN KEY (gala_id) REFERENCES Gala (gala_id)
+            );
+        """)
+
+        c.execute("""
+            CREATE TABLE Volunteer (
+                volunteer_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+                lane_id         INTEGER NOT NULL,
+
+                email           TEXT    NOT NULL,
+                code            TEXT    NOT NULL,
+
+                FOREIGN KEY (lane_id) REFERENCES Lane (lane_id)
             );
         """)
 
@@ -132,13 +153,13 @@ class Database:
 
         c.execute("""
             CREATE TABLE Race (
+                race_id         INTEGER PRIMARY KEY AUTOINCREMENT,
                 lane_id         INTEGER NOT NULL,
                 event_id        INTEGER NOT NULL,
 
                 heat            INTEGER NOT NULL,
                 time            INTEGER NULL,
 
-                PRIMARY KEY (lane_id, event_id),
                 FOREIGN KEY (lane_id) REFERENCES Lane (lane_id),
                 FOREIGN KEY (event_id) REFERENCES Event (event_id)
             );
@@ -429,7 +450,7 @@ class Database:
 
         return schools
 
-    def add_gala(self, host_id, guest_id, date):
+    def add_gala(self, host_id, date):
 
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
@@ -437,10 +458,23 @@ class Database:
         # Inserts the gala into the database
         c.execute("""
             INSERT INTO Gala (
-                home_school_id, guest_school_id, date, is_active, is_live)
-            VALUES (?, ?, ?, 1, 0)
-        """, (host_id, guest_id, date))
+                host_id, date, status)
+            VALUES (?, ?, 1)
+        """, (host_id, date))
         self.conn.commit()
+
+    def add_gala_school(self, gala_id, school_id):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Inserts the gala into the database
+            c.execute("""
+                INSERT INTO Gala_School (
+                    gala_id, school_id)
+                VALUES (?, ?)
+            """, (gala_id, school_id))
+            self.conn.commit()
 
     def get_school(self, school_id):
 
@@ -464,12 +498,33 @@ class Database:
         c.execute("""
             SELECT *
             FROM Gala
-            WHERE is_active = 1 AND is_live = 0
+            WHERE status = 1 OR status = 2
             ORDER BY date DESC
         """)
         return c.fetchone()
 
-    def update_gala(self, gala_id, host_id, guest_id, date):
+    def get_gala_schools(self, gala_id):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Gets the current gala
+            c.execute("""
+                SELECT school_id
+                FROM Gala_School
+                WHERE gala_id = ?
+            """, (gala_id,))
+            return [x[0] for x in c.fetchall()]
+
+    def get_gala_status(self):
+
+        gala = self.get_upcoming_gala()
+
+        if gala is None:
+            return 0
+        return gala[3]
+
+    def update_gala(self, gala_id, host_id, date):
 
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
@@ -477,9 +532,21 @@ class Database:
         # Updates the gala
         c.execute("""
             UPDATE Gala
-            SET home_school_id = ?, guest_school_id = ?, date = ?
+            SET host_id = ?, date = ?
             WHERE gala_id = ?
-        """, (host_id, guest_id, date, gala_id))
+        """, (host_id, date, gala_id))
+        self.conn.commit()
+
+    def remove_gala_school(self, gala_id, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Removes the gala school
+        c.execute("""
+            DELETE FROM Gala_School
+            WHERE gala_id = ? AND school_id = ?
+        """, (gala_id, school_id))
         self.conn.commit()
 
 # If database.py is the file being run

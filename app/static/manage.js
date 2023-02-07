@@ -4,14 +4,14 @@ function update_gala(event) {
     var user_id = $("meta[name='user_id']").attr("content");
 
     // Get the fields from the form
-    var school_id = $("#school_id").val();
-    var home = $("#home").val();
+    var schools = $("#schools").val();
+    var host = $("#host").val();
     var date = $("#date").val();
 
     // Create a FormData object
     var formData = new FormData();
-    formData.append("school_id", school_id);
-    formData.append("home", home);
+    formData.append("schools", schools);
+    formData.append("host", host);
     formData.append("date", date);
 
     // Create an XMLHttpRequest object

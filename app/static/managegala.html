@@ -1,6 +1,11 @@
 {% extends "template.html" %}
 {% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 <script type="text/javascript" src="/static/manage.js"></script>
+<script src="/static/hostingschool.js"></script>
 {% endblock %}
 {% block body %}
 <div class="form">
@@ -16,18 +21,24 @@
     </tbody>
 </table>
 <form class="sidebar form">
-    <select id="school_id" value={{ gala.host.name }} onchange="update_gala(event)" required>
+    <select id="schools" name="schools" class="selectpicker" value={{ gala.host.name }} onchange="updatehosts();update_gala(event)" multiple required>
         {% for school in schools %}
-        <option value={{ school.id }}>
-            {{ school.name|capitalize }}
+        {% if user.school_id != school.id %}
+        <option value={{ school.id }} {{ 'selected' if school.id in gala.school_ids else '' }}>
+            {{ school.name }}
         </option>
+        {% endif %}
         {% endfor %}
     </select>
     <br><br>
-    <h1 class="text">Home match:
-    </h1><input class="checkbox" type="checkbox" id="home"
-        {% if user.is_host(gala) %}checked{% endif %}/>
-    <label class="offset" for="home"></label>
+    <h1 class="text">Host:</h1>
+    <select id="host" name="host" class="selectpicker" onchange="update_gala(event)" required>
+        {% for school in gala.schools %}
+        <option value={{ school.id }} {{ 'selected' if school.id == gala.host.id else '' }}>
+            {{ school.name }}
+        </option>
+        {% endfor %}
+    </select>
     <br><br>
     <h1 class="text">Date:
     </h1><input id="date" type="date" class="date" value={{ gala.date }}>

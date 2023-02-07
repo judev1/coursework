@@ -1,25 +1,36 @@
 {% extends "template.html" %}
 {% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+<script src="/static/hostingschool.js"></script>
 {% endblock %}
 {% block body %}
 <div class="form">
     <h1 class="title spacy">Create a new gala</h1>
     <form action="/create" method="post">
-        <h1 class="text">Competing school:
-        <select name="school_id" required>
-            {% for school in schools %}
-            <option value={{ school.id }}>
-                {{ school.name|capitalize }}
-            </option>
-            {% endfor %}
-        </select>
+        <h1 class="text">Competing schools:
+            <select name="schools" class="selectpicker" onchange="updatehosts()" multiple required>
+                {% for school in schools %}
+                <option value={{ school.id }}>
+                    {{ school.name|capitalize }}
+                </option>
+                {% endfor %}
+            </select>
         </h1>
         <br><br>
-        <h1 class="text">Home match:
-        </h1><input class="checkbox" type="checkbox" id="home" name="home" checked/>
-        <label class="offset" for="home"></label>
+        <h1 class="text">Hosting school:
+            <select name="host" class="selectpicker" required>
+                <option value={{ user.school.id }}>
+                    {{ user.school.name|capitalize }}
+                </option>
+            </select>
+        </h1>
         <br><br>
-        <h1 class="text">Match date:</h1><input type="date" name="date" required>
+        <h1 class="text">Match date:
+            <input type="date" name="date" required>
+        </h1>
         <br><br><br>
         <div class="button">
             <input type="submit" value="Create">

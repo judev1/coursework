@@ -1,5 +1,5 @@
 :root {
-    --blue: #0A3149;
+    --blue: #0A3149 !important;
     --blue-opaque: #0A314920;
     --blue-opaquer: #0A314910;
     --blue-light: #68BAF1;
@@ -14,7 +14,8 @@
     border: 0;
 
     font-family: "Cambria Math";
-    color: var(--blue);
+    color: var(--blue) !important;
+    line-height: normal !important;
 }
 
 html {
@@ -34,7 +35,7 @@ a:hover,
 a:active,
 a:link,
 a:visited {
-    text-decoration: none;
+    text-decoration: none !important;
     outline: none;
     box-shadow: none;
 }
@@ -148,6 +149,10 @@ req::before {
 
 /* Universal navbar styles */
 
+.navbar {
+    display: block !important;
+}
+
 .navbar a {
     padding-left: 8px;
     padding-right: 8px;
@@ -239,7 +244,7 @@ form select {
     padding: 4px 8px;
     background: var(--blue-opaque);
     border-radius: 4px;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 form input[type=text]:hover,
@@ -254,16 +259,6 @@ form input[type=password]:focus,
 form input[type=date]:focus,
 form select:focus {
     outline: 2px solid var(--blue);
-}
-
-form input[type=text],
-form input[type=password],
-form select {
-    font-size: 12px;
-}
-
-form input[type=password]::placeholder {
-    font-size: 13px;
 }
 
 form .forgot-password {
@@ -433,6 +428,7 @@ form .field-error {
     display: inline-block;
     width: 100px;
     margin-left: 20px;
+    box-sizing: content-box;
 }
 
 input[type=checkbox] {
@@ -706,10 +702,17 @@ input[type=checkbox]:checked + label::after {
     text-align: center;
     transform: translateY(-50%);
     border-radius: 8px;
+    box-sizing: content-box;
 }
 
-.sidebar select[name=school_id] {
-    margin-left: 0;
+.sidebar .dropdown:nth-child(1) {
+    display: inline-block;
+    margin-left: 0 !important;
+}
+
+.sidebar .dropdown:nth-child(5),
+.sidebar input[type="date"] {
+    margin-left: 10px !important;
 }
 
 .sidebar .button {
@@ -731,4 +734,87 @@ input[type=checkbox]:checked + label::after {
 
 .sidebar.form input.date[type="date"] {
     width: 105px;
+}
+
+.dropdown {
+    margin-left: 20px !important;
+    width: 140px !important;
+}
+
+.dropdown .dropdown-toggle {
+    background: var(--blue-opaque) !important;
+    border: none;
+}
+
+.dropdown .dropdown-toggle:hover,
+.dropdown .dropdown-toggle:hover > .dropdown-menu {
+    background: var(--blue-opaque);
+    outline: 1px solid var(--blue);
+}
+
+.dropdown .dropdown-toggle.btn-light:focus {
+    background: var(--blue-opaque) !important;
+    outline: 2px solid var(--blue) !important;
+    outline-offset: 0 !important;
+}
+
+.dropdown .dropdown-toggle .filter-option-inner-inner {
+    position: relative;
+    top: 2px;
+    font-size: 12px;
+}
+
+.dropdown div.dropdown-menu {
+    background: var(--grey);
+    border: none;
+    margin-top: 4px;
+    outline: 1px solid var(--blue);
+}
+
+.dropdown .dropdown-menu .inner {
+    background: none;
+    padding: 5px 0;
+}
+
+.dropdown .dropdown-menu .form-control {
+    width: calc(100% - 16px);
+    margin: 0;
+    border: none;
+}
+
+.dropdown .dropdown-menu .form-control:hover,
+.dropdown .dropdown-menu .form-control:focus {
+    outline: 1px solid var(--blue);
+    background: var(--blue-opaque);
+    box-shadow: none;
+}
+
+.dropdown .dropdown-menu .dropdown-item {
+    padding: 0 20px;
+}
+
+.dropdown .dropdown-menu .dropdown-item:hover,
+.dropdown .dropdown-menu .dropdown-item:focus,
+.dropdown .dropdown-menu .dropdown-item:active {
+    background: none;
+}
+
+.dropdown .dropdown-menu .dropdown-item.active {
+    background: none; /*var(--blue-opaque);*/
+}
+
+.dropdown .dropdown-menu .dropdown-item span {
+    font-size: 12px;
+    height: 100%;
+}
+
+.dropdown .dropdown-menu .no-results {
+    font-size: 12px;
+    background: none;
+    padding: 0 20px;
+    margin: 0;
+}
+
+.bs-ok-default.check-mark {
+    top: 2px !important;
 }
