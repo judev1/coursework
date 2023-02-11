@@ -59,12 +59,12 @@
             <td class="stroke">{{ swimmer.fav_stroke.capitalize() }}</td>
             <td class="swimming disabled">
                 <input class="checkbox" type="checkbox" name="swimming"
-                    {% if swimmer.is_swimming %}checked{% endif %}
+                    {{ 'checked' if swimmer.is_swimming else '' }}
                     /><label for="swimming"></label>
             </td>
             <td class="captain disabled">
                 <input class="checkbox" type="checkbox" name="captain"
-                    {% if swimmer.captain %}checked{% endif %}
+                    {{ 'checked' if swimmer.captain else '' }}
                     /><label for="captain"></label>
             </td>
             <td class="modify">
@@ -178,12 +178,12 @@
             <td class="stroke">{{ swimmer.fav_stroke.capitalize() }}</td>
             <td class="swimming disabled">
                 <input class="checkbox" type="checkbox" name="swimming"
-                    {% if swimmer.is_swimming %}checked{% endif %}
+                    {{ 'checked' if swimmer.is_swimming else '' }}
                     /><label for="swimming"></label>
             </td>
             <td class="captain disabled">
                 <input class="checkbox" type="checkbox" name="captain"
-                    {% if swimmer.captain %}checked{% endif %}
+                    {{ 'checked' if swimmer.captain else '' }}
                     /><label for="captain"></label>
             </td>
         </tr>

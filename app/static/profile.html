@@ -39,7 +39,7 @@
             {% set fav_stroke = user_page.fav_stroke %}
             {% for stroke in user.strokes %}
             {% set stroke = stroke %}
-            <option value="{{ stroke }}" {% if fav_stroke == stroke %}selected{% endif %}>
+            <option value="{{ stroke }}" {{ 'selected' if fav_stroke == stroke else '' }}>
                 {{ stroke|capitalize }}
             </option>
             {% endfor %}
@@ -48,7 +48,7 @@
         <br><br>
         <h1 class="text">Is Swimming:
         </h1><input class="checkbox" type="checkbox" id="swimming" name="swimming"
-            {% if user_page.is_swimming %}checked{% endif %}/>
+            {{ 'checked' if user_page.is_swimming else '' }}/>
         <label class="offset" for="swimming"></label>
         <br><br><br>
         <div class="button">
@@ -63,7 +63,7 @@
         <br><br>
         <h1 class="text">Is Swimming:
         </h1><input class="checkbox" type="checkbox" id="swimming" name="swimming"
-            {% if user_page.is_swimming %}checked{% endif %}/>
+            {{ 'checked' if user_page.is_swimming else '' }}/>
         <label class="offset" for="swimming"></label>
     </form>
     {% endif %}
