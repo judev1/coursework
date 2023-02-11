@@ -844,3 +844,23 @@ input[type=checkbox]:checked + label::after {
     background: none;
     width: 100px
 }
+
+.remove-lane {
+    display: table-cell;
+    vertical-align: center;
+}
+
+.remove-lane {
+    background: none;
+    color: var(--red) !important;
+    padding: 2px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.remove-lane:hover,
+.remove-lane:focus {
+    outline-offset: -1px;
+    outline: 1px dotted var(--red);
+}
