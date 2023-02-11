@@ -87,7 +87,6 @@ class User:
         return self.coach or self.captain
 
     def can_edit(self, page):
-        print(self.coach, self.id, page.school.id, type(self.coach), type(self.id), type(page.school.id))
         return self.coach and self.school.id == page.school.id
 
     def is_owner(self, page):
@@ -115,6 +114,15 @@ class Gala:
 
         self.school_ids = db.get_gala_schools(self.id)
         self.schools = map(School, map(db.get_school, self.school_ids))
+
+class Lane:
+
+    def __init__(self, details):
+
+        self.id = details[0]
+        self.gala = Gala(db.get_gala(details[1]))
+
+        self.number = details[2]
 
 # Checks a user's token
 def check_token():
@@ -691,6 +699,7 @@ def manage():
 
     gala = Gala(db.get_upcoming_gala())
     schools = map(School, db.get_other_schools(user.school.id))
+    lanes = list(map(Lane, db.get_lanes(gala.id)))
 
     return render_template(
         'managegala.html',
@@ -698,69 +707,128 @@ def manage():
         user=get_logged_in_user(),
         status=db.get_gala_status(),
         gala=gala,
-        schools=schools
+        schools=schools,
+        lanes=lanes
     )
 
 # The route for the update gala method
 @app.route('/update_gala', methods=['POST'])
 def update_gala_method():
 
-        # Checks if the user is logged in
-        if not check_token():
-            return redirect('/login')
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
 
-        token = request.cookies['token']
-        user = get_user(db.get_user_id(token))
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
 
-        # Checks if the user is a coach
-        if not user.coach:
-            return 'You do not have permission to do this', 403
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
 
-        # Checks if the user has provided a school
-        if 'schools' not in request.form:
-            return 'Schools not provided', 400
-        schools = request.form['schools'].split(',')
+    # Checks if the user has provided a school
+    if 'schools' not in request.form:
+        return 'Schools not provided', 400
+    schools = request.form['schools'].split(',')
 
-        # Checks if the schools are valid
-        for school_id in schools:
-            print(school_id, type(school_id))
-            if not db.get_school(int(school_id)):
-                return 'Invalid school', 400
+    # Checks if the schools are valid
+    for school_id in schools:
+        print(school_id, type(school_id))
+        if not db.get_school(int(school_id)):
+            return 'Invalid school', 400
 
-        # Checks if the user has provided a host_id
-        if 'host' not in request.form:
-            return 'Host not provided', 400
-        host_id = request.form['host']
+    # Checks if the user has provided a host_id
+    if 'host' not in request.form:
+        return 'Host not provided', 400
+    host_id = request.form['host']
 
-        # Checks if the host is valid
-        if not db.get_school(host_id):
-            return 'Invalid host', 400
+    # Checks if the host is valid
+    if not db.get_school(host_id):
+        return 'Invalid host', 400
 
-        # Checks if the user has provided a date
-        if 'date' not in request.form:
-            return 'Date not provided', 400
-        date = request.form['date']
+    # Checks if the user has provided a date
+    if 'date' not in request.form:
+        return 'Date not provided', 400
+    date = request.form['date']
 
-        # Gets the gala_id
-        gala_id = db.get_upcoming_gala()[0]
+    # Gets the gala_id
+    gala_id = db.get_upcoming_gala()[0]
 
-        # Updates the gala in the database
-        db.update_gala(gala_id, host_id, date)
+    # Updates the gala in the database
+    db.update_gala(gala_id, host_id, date)
 
-        # Removes the schools from the gala
-        gala_schools = db.get_gala_schools(gala_id)
-        for school_id in gala_schools:
-            if school_id != user.school.id and school_id not in schools:
-                db.remove_gala_school(gala_id, school_id)
+    # Removes the schools from the gala
+    gala_schools = db.get_gala_schools(gala_id)
+    for school_id in gala_schools:
+        if school_id != user.school.id and school_id not in schools:
+            db.remove_gala_school(gala_id, school_id)
 
-        # Adds the schools to the gala
-        for school_id in schools:
-            if school_id not in gala_schools:
-                db.add_gala_school(gala_id, school_id)
+    # Adds the schools to the gala
+    for school_id in schools:
+        if school_id not in gala_schools:
+            db.add_gala_school(gala_id, school_id)
 
-        # Redirects to the manage page
-        return redirect('/manage')
+    # Redirects to the manage page
+    return redirect('/manage')
 
+# The route for the add lane method
+@app.route('/add_lane', methods=['POST'])
+def add_lane_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided a lane
+    if 'lane' not in request.form:
+        return 'Lane not provided', 400
+    lane = request.form['lane']
+
+    gala = Gala(db.get_upcoming_gala())
+
+    # Adds the lane to the gala and then gets the lane id
+    db.add_lane(gala.id, lane)
+    lane_id = db.get_lane(gala.id, lane)[0]
+
+    # Returns the lane id
+    return {"lane_id": lane_id}
+
+# The route for the update lanes method
+@app.route('/update_lanes', methods=['POST'])
+def update_lanes_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided a list of lane_ids and lane_nos
+    if 'lanes' not in request.form:
+        return 'Lanes not provided', 400
+    lanes = request.form['lanes']
+
+    # Converts the str to a list
+    lanes = lanes[2:-2].split('],[')
+    lanes = list(map(lambda x: x.split(','), lanes))
+
+    # Updates the lanes
+    gala_id = db.get_upcoming_gala()[0]
+    db.update_lanes(gala_id, lanes)
+
+    return redirect('/manage')
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

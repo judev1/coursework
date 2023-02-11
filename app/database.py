@@ -489,6 +489,19 @@ class Database:
         """, (school_id,))
         return c.fetchone()
 
+    def get_gala(self, gala_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Checks if the gala exists
+        c.execute("""
+            SELECT *
+            FROM Gala
+            WHERE gala_id = ?
+        """, (gala_id,))
+        return c.fetchone()
+
     def get_upcoming_gala(self):
 
         # Creates a cursor object to execute SQL commands
@@ -547,6 +560,67 @@ class Database:
             DELETE FROM Gala_School
             WHERE gala_id = ? AND school_id = ?
         """, (gala_id, school_id))
+        self.conn.commit()
+
+    def add_lane(self, gala_id, lane):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Inserts the lane into the database
+        c.execute("""
+            INSERT INTO Lane (
+                gala_id, lane_no)
+            VALUES (?, ?)
+        """, (gala_id, lane))
+        self.conn.commit()
+
+    def get_lane(self, gala_id, lane):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Gets the lane
+            c.execute("""
+                SELECT *
+                FROM Lane
+                WHERE gala_id = ? AND lane_no = ?
+            """, (gala_id, lane))
+            return c.fetchone()
+
+    def get_lanes(self, gala_id):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Gets the lane
+            c.execute("""
+                SELECT *
+                FROM Lane
+                WHERE gala_id = ?
+                ORDER BY lane_no
+            """, (gala_id,))
+            return c.fetchall()
+
+    def update_lanes(self, gala_id, lanes):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Deletes all lanes except the current ones
+        c.execute(f"""
+            DELETE FROM Lane
+            WHERE gala_id = ? AND lane_id NOT IN ({','.join('?' * len(lanes))})
+        """, (gala_id, *[x[0] for x in lanes]))
+
+        # Updates the lanes
+        for lane in lanes:
+            c.execute("""
+                UPDATE Lane
+                SET lane_no = ?
+                WHERE lane_id = ?
+            """, (lane[1], lane[0]))
+
         self.conn.commit()
 
 # If database.py is the file being run

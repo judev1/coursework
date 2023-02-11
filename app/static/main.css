@@ -274,7 +274,8 @@ form .button {
     text-align: center;
 }
 
-form .button input {
+form .button input,
+form .button button {
     font-size: 20px;
     padding: 10px 40px;
     border-radius: 8px;
@@ -284,15 +285,18 @@ form .button input {
     cursor: pointer;
 }
 
-form .button input:hover {
+form .button input:hover,
+form .button button:hover {
     outline: 1px solid var(--blue);
 }
 
-form .button input:active {
+form .button input:active,
+form .button button:active {
     transform: translate(0, 1px);
 }
 
-form .button input:focus {
+form .button input:focus,
+form .button button:focus {
     outline: 2px solid var(--blue);
 }
 
@@ -419,13 +423,6 @@ form .field-error {
 .form input[type=text],
 .form input[type=date] {
     display: inline-block;
-    width: 200px;
-}
-
-.form select,
-.form input[type=text],
-.form input[type=date] {
-    display: inline-block;
     width: 100px;
     margin-left: 20px;
     box-sizing: content-box;
@@ -470,7 +467,8 @@ input[type=checkbox]:checked + label::after {
     margin-left: 20px;
 }
 
-.form .button input {
+.form .button input,
+.form .button button {
     font-size: 14px;
 }
 
@@ -509,7 +507,7 @@ input[type=checkbox]:checked + label::after {
 .swimmers thead th {
     padding: 10px;
     background: var(--blue);
-    color: white;
+    color: white !important;
 }
 
 .swimmers tbody td {
@@ -688,19 +686,25 @@ input[type=checkbox]:checked + label::after {
     width: 8px;
 }
 
-.title.spacy {
+.spacy {
+    margin-left: 20px;
     margin-bottom: 30px;
 }
+
+/* Sidebar */
 
 .sidebar {
     position: fixed;
     right: 8%;
     top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.sidebar .form {
     width: 200px;
     background: var(--grey);
-    z-index: 1;
     text-align: center;
-    transform: translateY(-50%);
     border-radius: 8px;
     box-sizing: content-box;
 }
@@ -719,20 +723,20 @@ input[type=checkbox]:checked + label::after {
     margin-top: 20px;
 }
 
-.red.button input {
+.red.button button {
     background: var(--red);
     color: white;
 }
 
-.red.button input:hover {
+.red.button button:hover {
     outline: 1px solid black;
 }
 
-.red.button input:active {
+.red.button button:active {
     outline: 2px solid black;
 }
 
-.sidebar.form input.date[type="date"] {
+.sidebar input.date[type="date"] {
     width: 105px;
 }
 
@@ -817,4 +821,26 @@ input[type=checkbox]:checked + label::after {
 
 .bs-ok-default.check-mark {
     top: 2px !important;
+}
+
+/* Table */
+
+.gala {
+    max-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 20px;
+}
+
+.gala thead th {
+    width: 100px;
+    background: var(--blue);
+    color: white !important;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.gala thead .blank {
+    background: none;
+    width: 100px
 }
