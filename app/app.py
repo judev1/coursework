@@ -124,6 +124,28 @@ class Lane:
 
         self.number = details[2]
 
+class Event:
+
+    def __init__(self, details):
+
+        self.id = details[0]
+        self.gala = Gala(db.get_gala(details[1]))
+
+        self.number = details[2]
+        self.heats = details[3]
+        self.age_range = details[4]
+        self.gender = details[5]
+        self.parts = details[6]
+        self.relay = details[7]
+        self.length = details[8]
+        self.stroke = details[9]
+        self.live = details[10]
+
+    @property
+    def name(self):
+        parts = f'{self.parts}x' if self.parts > 1 else ''
+        return f"{self.age_range} {self.gender.capitalize()} {parts}{self.length}m {self.stroke.capitalize()}"
+
 # Checks a user's token
 def check_token():
 
@@ -700,6 +722,7 @@ def manage():
     gala = Gala(db.get_upcoming_gala())
     schools = map(School, db.get_other_schools(user.school.id))
     lanes = list(map(Lane, db.get_lanes(gala.id)))
+    events = list(map(Event, db.get_events(gala.id)))
 
     return render_template(
         'managegala.html',
@@ -708,7 +731,8 @@ def manage():
         status=db.get_gala_status(),
         gala=gala,
         schools=schools,
-        lanes=lanes
+        lanes=lanes,
+        events=events
     )
 
 # The route for the update gala method
@@ -829,6 +853,89 @@ def update_lanes_method():
     db.update_lanes(gala_id, lanes)
 
     return redirect('/manage')
+
+# The route for the add event method
+@app.route('/add_event', methods=['POST'])
+def add_event_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided a stroke
+    if 'stroke' not in request.form:
+        return 'Stroke not provided', 400
+    stroke = request.form['stroke']
+
+    # Checks if the user has provided the number of parts
+    if 'parts' not in request.form:
+        return 'Parts not provided', 400
+    parts = request.form['parts']
+
+    # Checks if the user has provided the length
+    if 'length' not in request.form:
+        return 'Length not provided', 400
+    length = request.form['length']
+
+    # Checks if the user has provided the age group
+    if 'age_group' not in request.form:
+        return 'Age group not provided', 400
+    age_group = request.form['age_group']
+
+    # Checks if the user has provided the group
+    if 'group' not in request.form:
+        return 'Group not provided', 400
+    group = request.form['group']
+
+    # Checks if the coach has provided a relay status
+    relay = 'relay' in request.form
+
+    gala_id = db.get_upcoming_gala()[0]
+    event_no = len(db.get_events(gala_id)) + 1
+
+    # Adds the event to the gala and then gets the event id
+    db.add_event(gala_id, event_no, age_group, group, parts, relay, length, stroke)
+    event_id = db.get_event(gala_id, event_no)[0]
+
+    # Returns the event id
+    return {"event_id": event_id}
+
+# The route for the update events method
+@app.route('/update_events', methods=['POST'])
+def update_events_method():
+
+        # Checks if the user is logged in
+        if not check_token():
+            return redirect('/login')
+
+        token = request.cookies['token']
+        user = get_user(db.get_user_id(token))
+
+        # Checks if the user is a coach
+        if not user.coach:
+            return 'You do not have permission to do this', 403
+
+        # Checks if the user has provided a list of event_ids and event_nos
+        if 'events' not in request.form:
+            return 'Events not provided', 400
+        events = request.form['events']
+
+        # Converts the str to a list
+        events = events[1:-1].split(',')
+        # events = list(map(lambda x: int(x), events))
+
+        # Updates the events
+        gala_id = db.get_upcoming_gala()[0]
+        db.update_events(gala_id, events)
+
+        return redirect('/manage')
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

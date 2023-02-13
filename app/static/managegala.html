@@ -18,6 +18,7 @@
     <thead class="lanes">
         <tr>
             <th class="blank dragtable-drag-boundary"></th>
+            <th class="blank dragtable-drag-boundary"></th>
             {% for lane in lanes %}
             <th lane-id={{ lane.id }}>
                 Lane {{ lane.number }}
@@ -28,10 +29,27 @@
     <tbody>
         <tr>
             <td class="blank dragtable-drag-boundary"></td>
+            <td class="blank dragtable-drag-boundary"></td>
             {% for lane in lanes %}
             <td class="remove-lane" onclick="remove_lane(event)">remove</td>
             {% endfor %}
         </tr>
+        {% for event in events %}
+        <tr event-id={{ event.id }}>
+            <td>{{ event.name }}</td>
+            <td class="heats">
+                {% for i in range(event.heats) %}
+                <div>Heat {{ i + 1}}</div>
+                {% endfor %}
+            </td>
+            {% for lane in lanes %}
+            <td></td>
+            {% endfor %}
+            <td class="remove-event">
+                <img src="static/images/cross.png" onclick="remove_event(event)">
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 <div class="sidebar">
@@ -62,11 +80,81 @@
             <button type="button" onclick="add_lane(event)">Add lane</button>
         </div>
         <div class="button">
-            <button type="button" onclick="">Add event</button>
+            <button type="button" onclick="$('#add-event').show()">Add event</button>
         </div>
         <div class="red button">
             <button type="button" onclick="">Make live</button>
         </div>
     </form>
+</div>
+<div id="add-event" class="popup-wrapper">
+    <div class="popup">
+        <form action="/add_event" method="post">
+            <a class="close" onclick="$('#add-event').hide()">
+                <img src="static/images/cross.png">
+                Close
+            </a>
+            <div class="title">New event</div>
+            <div class="input">
+                <h1 class="text">Stroke:</h1>
+                <select name="stroke" id="stroke" required>
+                    <option value="frontcrawl">Frontcrawl</option>
+                    <option value="backstroke">Backstroke</option>
+                    <option value="breaststroke">Breaststroke</option>
+                    <option value="butterfly">Butterfly</option>
+                    <option value="medley">Medley</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Parts:</h1>
+                <select name="parts" id="parts" required>
+                    <option value="1">1x</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Length:</h1>
+                <select name="length" id="length" required>
+                    <option value="25">25m</option>
+                    <option value="50" selected>50m</option>
+                    <option value="75">75m</option>
+                    <option value="100">100m</option>
+                    <option value="150">150m</option>
+                    <option value="200">200m</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Age group:</h1>
+                <select name="age_group" id="age_group" required>
+                    <option value="u16">u16</option>
+                    <option value="u18">u18</option>
+                    <option value="all">All</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Group:</h1>
+                <select name="group" id="group" required>
+                    <option value="boys">Boys</option>
+                    <option value="girls">Girls</option>
+                    <option value="mixed">Mixed</option>
+                </select>
+            </div>
+            <div class="input">
+                <h1 class="text">Relay?
+                </h1><input class="checkbox" type="checkbox" id="relay" name="relay">
+                <label class="offset" for="relay"></label>
+            </div>
+            <br>
+            <div class="button">
+                <input id="add" type="submit" value="Add event">
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

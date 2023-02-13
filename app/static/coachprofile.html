@@ -86,7 +86,7 @@
         </tr>
     </tbody>
 </table>
-<div id="add-student">
+<div id="add-student" class="popup-wrapper">
     <div class="popup">
         <form onsubmit="return validatefields()" action="/add_student" method="post">
             <a class="close" onclick="$('#add-student').hide()">
@@ -109,8 +109,8 @@
             <p id="invalid-email" class="field-error">invalid email</p>
             <div class="input">
                 <h1 class="text">Year:</h1>
-                <select name="year" id="year">
-                    <option value=13 selected>XX</option>
+                <select name="year" id="year" required>
+                    <option value=13>XX</option>
                     <option value=12>LXX</option>
                     <option value=11>D Block</option>
                     <option value=10>E Block</option>

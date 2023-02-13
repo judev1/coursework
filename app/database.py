@@ -613,13 +613,81 @@ class Database:
             WHERE gala_id = ? AND lane_id NOT IN ({','.join('?' * len(lanes))})
         """, (gala_id, *[x[0] for x in lanes]))
 
+        print(lanes)
+
+        if lanes[0] == ['']:
+            self.conn.commit()
+            return
+
         # Updates the lanes
         for lane in lanes:
             c.execute("""
                 UPDATE Lane
                 SET lane_no = ?
-                WHERE lane_id = ?
-            """, (lane[1], lane[0]))
+                WHERE gala_id = ? AND lane_id = ?
+            """, (lane[1], gala_id, lane[0]))
+
+        self.conn.commit()
+
+    def get_events(self, gala_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the events
+        c.execute("""
+            SELECT *
+            FROM Event
+            WHERE gala_id = ?
+            ORDER BY event_no
+        """, (gala_id,))
+        return c.fetchall()
+
+    def get_event(self, gala_id, event_no):
+
+            # Creates a cursor object to execute SQL commands
+            c = self.conn.cursor()
+
+            # Gets the event
+            c.execute("""
+                SELECT *
+                FROM Event
+                WHERE gala_id = ? AND event_no = ?
+            """, (gala_id, event_no))
+            return c.fetchone()
+
+    def add_event(self, gala_id, event_no, age_range, gender, parts, is_relay, length, stroke):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Inserts the event into the database
+        c.execute("""
+            INSERT INTO Event (gala_id, event_no, heats, age_range, gender,
+                parts, is_relay, length, stroke, is_live)
+            VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?, 0)
+        """, (gala_id, event_no, age_range, gender, parts, is_relay, length, stroke))
+
+        self.conn.commit()
+
+    def update_events(self, gala_id, events):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Deletes all events except the current ones
+        c.execute(f"""
+            DELETE FROM Event
+            WHERE event_id NOT IN ({','.join('?' * len(events))})
+        """, (*events,))
+
+        # Updates the events
+        for i, event in enumerate(events):
+            c.execute("""
+                UPDATE Event
+                SET event_no = ?
+                WHERE gala_id = ? AND event_id = ?
+            """, (i + 1, gala_id, event))
 
         self.conn.commit()
 

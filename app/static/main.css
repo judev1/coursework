@@ -237,6 +237,7 @@ form .text {
 form input[type=text],
 form input[type=password],
 form input[type=date],
+form input[type=number],
 form select {
     display: block;
     width: calc(100% - 16px);
@@ -250,6 +251,7 @@ form select {
 form input[type=text]:hover,
 form input[type=password]:hover,
 form input[type=date]:hover,
+form input[type=number]:hover,
 form select:hover {
     outline: 1px solid var(--blue);
 }
@@ -257,6 +259,7 @@ form select:hover {
 form input[type=text]:focus,
 form input[type=password]:focus,
 form input[type=date]:focus,
+form input[type=number]:focus,
 form select:focus {
     outline: 2px solid var(--blue);
 }
@@ -580,20 +583,19 @@ input[type=checkbox]:checked + label::after {
 
 /* Add student popup */
 
-#add-student {
+.popup-wrapper {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 400px;
     height: 100%;
     background: rgba(0,0,0,0.4);
     z-index: 2;
     overflow: scroll;
 }
 
-#add-student .popup {
+.popup-wrapper .popup {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -605,61 +607,63 @@ input[type=checkbox]:checked + label::after {
 }
 
 @media screen and (max-height: 565px) {
-    #add-student .popup {
+    .popup-wrapper .popup {
         top: 0;
         transform: translate(-50%, 0);
     }
 }
 
-#add-student .popup form {
+.popup-wrapper .popup form {
     padding: 20px;
 }
 
-#add-student .popup .title {
+.popup-wrapper .popup .title {
     text-align: center;
     font-size: 30px;
     margin-bottom: 20px;
+    box-sizing: content-box;
 }
 
-#add-student .popup .input {
+.popup-wrapper .popup .input {
     display: block;
     margin-bottom: 20px;
 }
 
-#add-student .popup .input .text {
+.popup-wrapper .popup .input .text {
     display: inline;
     font-size: 20px;
 }
 
-#add-student .popup input,
-#add-student .popup select {
+.popup-wrapper .popup input,
+.popup-wrapper .popup select {
     display: inline;
     position: absolute;
     right: 20px;
     width: 170px;
 }
 
-#add-student .popup input,
-#add-student .popup select {
+.popup-wrapper .popup input,
+.popup-wrapper .popup select {
     transform: translate(0, -2px);
 }
 
-#add-student .popup select {
+.popup-wrapper .popup input[type=number],
+.popup-wrapper .popup select {
     width: 186px;
     height: 32px;
 }
 
-#add-student .popup label {
+.popup-wrapper .popup label {
     display: inline;
     position: absolute;
     right: calc(20px + 186px/2 - 20px/2);
 }
 
-#add-student .popup input[type=checkbox] {
+.popup-wrapper .popup input[type=checkbox] {
     display: none
 }
 
-#add-student .popup input#add {
+.popup-wrapper .popup input#add {
     position: static;
     right: 0;
     width: auto;
@@ -667,7 +671,7 @@ input[type=checkbox]:checked + label::after {
     padding-right: 20px;
 }
 
-#add-student .popup .field-error {
+.popup-wrapper .popup .field-error {
     /* display: block;
     padding: 2px;
     font-size: 12px;
@@ -676,14 +680,20 @@ input[type=checkbox]:checked + label::after {
     margin-bottom: 20px;
 }
 
-.close {
+.popup-wrapper .popup .close {
     cursor: pointer;
     display: inline;
+    float: none;
     font-size: 12px;
+    opacity: 1;
+    filter: none;
+    font-weight: normal;
+    text-shadow: none;
 }
 
 .close img {
     width: 8px;
+    vertical-align: unset;
 }
 
 .spacy {
@@ -836,7 +846,6 @@ input[type=checkbox]:checked + label::after {
     width: 100px;
     background: var(--blue);
     color: white !important;
-    padding: 10px;
     font-size: 14px;
 }
 
@@ -853,7 +862,7 @@ input[type=checkbox]:checked + label::after {
 .remove-lane {
     background: none;
     color: var(--red) !important;
-    padding: 2px;
+    padding: 2px !important;
     font-size: 12px;
     cursor: pointer;
     text-align: center;
@@ -863,4 +872,69 @@ input[type=checkbox]:checked + label::after {
 .remove-lane:focus {
     outline-offset: -1px;
     outline: 1px dotted var(--red);
+}
+
+.gala tbody td:first-child {
+    width: 200px;
+}
+
+.gala tbody tr td {
+    border-top: 1px dotted rgba(0,0,0,0);
+    opacity: 1;
+}
+
+.gala tbody tr:nth-child(2n) td {
+    background: var(--grey);
+}
+
+.gala tbody tr.selected td {
+    border-top: 1px dotted black;
+    border-bottom: 1px dotted black;
+    opacity: 0.7;
+}
+
+.gala tbody tr.placeholder:nth-child(2n) td,
+.gala tbody tr.placeholder:nth-child(2n) td * {
+    color: white !important;
+}
+
+.gala tbody tr.placeholder:nth-child(2n) td {
+    background: #EFEFEF !important;
+}
+
+.gala tbody tr.placeholder:nth-child(2n + 1) td,
+.gala tbody tr.placeholder:nth-child(2n + 1) td * {
+    color: #EFEFEF !important;
+}
+
+.gala th, .gala td {
+    padding: 10px;
+}
+
+.gala th:nth-child(2), .gala td:nth-child(2) {
+    width: 60px;
+    font-size: 12px;
+}
+
+.remove-event {
+    background: none !important;
+}
+
+.gala tr:hover > .remove-event img {
+    opacity: 0.3;
+}
+
+.remove-event img {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    padding: 2px;
+    border: 1px solid var(--blue);
+    border-radius: 100%;
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.remove-event img:hover {
+    opacity: 0.6 !important;
 }
