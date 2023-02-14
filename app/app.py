@@ -1009,13 +1009,16 @@ def update_race_method():
     # Gets the race or creates it if it doesn't exist
     race = db.get_race(event_id, lane_id, heat=1)
     if not race and swimmer_ids:
-        race = db.add_race(event_id, lane_id, heat=1)
+        db.add_race(event_id, lane_id, heat=1)
+        race = db.get_race(event_id, lane_id, heat=1)
+    elif not race and not swimmer_ids:
+        return 'ok'
 
     # Updates the race participants
     db.update_participants(race[0], swimmer_ids)
 
     # Removes the race if there are no participants
-    if not race and not swimmer_ids:
+    if not swimmer_ids:
         db.remove_race(event_id, lane_id, heat=1)
 
     return 'ok'
