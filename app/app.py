@@ -83,7 +83,8 @@ class User:
             return years[year]
         return f'{self.graduation_year} Leaver'
 
-    def is_admin(self):
+    @property
+    def admin(self):
         return self.coach or self.captain
 
     def can_edit(self, page):
@@ -690,6 +691,13 @@ def create_gala_method():
     if not check_token():
         return redirect('/login')
 
+    # Checks to see if there is a current gala on
+    status = db.get_gala_status()
+    if status == 1:
+        return redirect('/manage')
+    elif status == 2:
+        return redirect('/manage_live')
+
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
@@ -749,11 +757,18 @@ def manage():
     if not check_token():
         return redirect('/login')
 
+    # Checks to see if there is a current gala on
+    status = db.get_gala_status()
+    if status == 0:
+        return redirect('/')
+    elif status == 2:
+        return redirect('/manage_live')
+
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     gala = Gala(db.get_upcoming_gala())
@@ -785,8 +800,8 @@ def update_gala_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided a school
@@ -843,8 +858,8 @@ def add_lane_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided a lane
@@ -872,8 +887,8 @@ def update_lanes_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided a list of lane_ids and lane_nos
@@ -902,8 +917,8 @@ def add_event_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an coach
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided a stroke
@@ -955,8 +970,8 @@ def update_events_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided a list of event_ids and event_nos
@@ -984,8 +999,8 @@ def update_race_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided the event id
@@ -1066,8 +1081,8 @@ def get_swimmers_method():
     token = request.cookies['token']
     user = get_user(db.get_user_id(token))
 
-    # Checks if the user is a coach
-    if not user.coach:
+    # Checks if the user is an admin
+    if not user.admin:
         return 'You do not have permission to do this', 403
 
     # Checks if the user has provided the event id
@@ -1088,6 +1103,31 @@ def get_swimmers_method():
             event_swimmers.append([swimmer.id, name, fav_stroke])
 
     return event_swimmers
+
+# The route for the make gala live method
+@app.route('/make_live/<gala_id>', methods=['GET'])
+def make_gala_live_method(gala_id):
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the gala is currently being set up
+    status = db.get_gala_status()
+    if status != 1:
+        return 'Gala is not currently being set up', 400
+
+    # Makes the gala live
+    db.make_gala_live(gala_id)
+
+    return redirect('/manage_live')
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

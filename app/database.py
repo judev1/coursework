@@ -810,6 +810,18 @@ class Database:
         """, (event_id,))
         return c.fetchone()
 
+    def make_gala_live(self, gala_id):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the gala status
+        c.execute("""
+            UPDATE Gala
+            SET status = 2
+            WHERE gala_id = ?
+        """, (gala_id,))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db
