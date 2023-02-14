@@ -47,7 +47,6 @@
                 <select class="selectpicker" onchange="update_race(event)" required>
                     <option selected value>--</option>
                     {% for swimmer in swimmers %}
-                    {{ event.gender }}{{ swimmer.gender }}
                     {% if event.can_swim(swimmer) %}
                     <option value={{ swimmer.id }} class="{{ 'important' if swimmer.fav_stroke == event.stroke else '' }}"
                         {{ 'selected' if event.lane_participant(lane, swimmer) else '' }}>
