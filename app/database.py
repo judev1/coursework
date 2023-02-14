@@ -465,16 +465,16 @@ class Database:
 
     def add_gala_school(self, gala_id, school_id):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Inserts the gala into the database
-            c.execute("""
-                INSERT INTO Gala_School (
-                    gala_id, school_id)
-                VALUES (?, ?)
-            """, (gala_id, school_id))
-            self.conn.commit()
+        # Inserts the gala into the database
+        c.execute("""
+            INSERT INTO Gala_School (
+                gala_id, school_id)
+            VALUES (?, ?)
+        """, (gala_id, school_id))
+        self.conn.commit()
 
     def get_school(self, school_id):
 
@@ -518,16 +518,16 @@ class Database:
 
     def get_gala_schools(self, gala_id):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Gets the current gala
-            c.execute("""
-                SELECT school_id
-                FROM Gala_School
-                WHERE gala_id = ?
-            """, (gala_id,))
-            return [x[0] for x in c.fetchall()]
+        # Gets the current gala
+        c.execute("""
+            SELECT school_id
+            FROM Gala_School
+            WHERE gala_id = ?
+        """, (gala_id,))
+        return [x[0] for x in c.fetchall()]
 
     def get_gala_status(self):
 
@@ -577,30 +577,30 @@ class Database:
 
     def get_lane(self, gala_id, lane):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Gets the lane
-            c.execute("""
-                SELECT *
-                FROM Lane
-                WHERE gala_id = ? AND lane_no = ?
-            """, (gala_id, lane))
-            return c.fetchone()
+        # Gets the lane
+        c.execute("""
+            SELECT *
+            FROM Lane
+            WHERE gala_id = ? AND lane_no = ?
+        """, (gala_id, lane))
+        return c.fetchone()
 
     def get_lanes(self, gala_id):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Gets the lane
-            c.execute("""
-                SELECT *
-                FROM Lane
-                WHERE gala_id = ?
-                ORDER BY lane_no
-            """, (gala_id,))
-            return c.fetchall()
+        # Gets the lane
+        c.execute("""
+            SELECT *
+            FROM Lane
+            WHERE gala_id = ?
+            ORDER BY lane_no
+        """, (gala_id,))
+        return c.fetchall()
 
     def update_lanes(self, gala_id, lanes):
 
@@ -612,8 +612,6 @@ class Database:
             DELETE FROM Lane
             WHERE gala_id = ? AND lane_id NOT IN ({','.join('?' * len(lanes))})
         """, (gala_id, *[x[0] for x in lanes]))
-
-        print(lanes)
 
         if lanes[0] == ['']:
             self.conn.commit()
@@ -645,16 +643,16 @@ class Database:
 
     def get_event(self, gala_id, event_no):
 
-            # Creates a cursor object to execute SQL commands
-            c = self.conn.cursor()
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
 
-            # Gets the event
-            c.execute("""
-                SELECT *
-                FROM Event
-                WHERE gala_id = ? AND event_no = ?
-            """, (gala_id, event_no))
-            return c.fetchone()
+        # Gets the event
+        c.execute("""
+            SELECT *
+            FROM Event
+            WHERE gala_id = ? AND event_no = ?
+        """, (gala_id, event_no))
+        return c.fetchone()
 
     def add_event(self, gala_id, event_no, age_range, gender, parts, is_relay, length, stroke):
 
@@ -678,8 +676,8 @@ class Database:
         # Deletes all events except the current ones
         c.execute(f"""
             DELETE FROM Event
-            WHERE event_id NOT IN ({','.join('?' * len(events))})
-        """, (*events,))
+            WHERE gala_id = ? AND event_id NOT IN ({','.join('?' * len(events))})
+        """, (gala_id, *events))
 
         # Updates the events
         for i, event in enumerate(events):
@@ -690,6 +688,114 @@ class Database:
             """, (i + 1, gala_id, event))
 
         self.conn.commit()
+
+    def get_swimmers(self, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all the students that are swimming
+        c.execute("""
+            SELECT *
+            FROM User
+            WHERE user_id IN (
+                SELECT user_id
+                FROM Student
+                WHERE school_id = ? AND is_swimming = 1
+            )
+        """, (school_id,))
+
+        return c.fetchall()
+
+    def get_race(self, event_id, lane_id, heat):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the race
+        c.execute("""
+            SELECT *
+            FROM Race
+            WHERE event_id = ? AND lane_id = ? AND heat = ?
+        """, (event_id, lane_id, heat))
+        return c.fetchone()
+
+    def add_race(self, event_id, lane_id, heat):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Inserts the race into the database
+        c.execute("""
+            INSERT INTO Race (
+                event_id, lane_id, heat)
+            VALUES (?, ?, ?)
+        """, (event_id, lane_id, heat))
+        self.conn.commit()
+
+    def remove_race(self, event_id, lane_id, heat):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Removes the race
+        c.execute("""
+            DELETE FROM Race
+            WHERE event_id = ? AND lane_id = ? AND heat = ?
+        """, (event_id, lane_id, heat))
+        self.conn.commit()
+
+    def update_participants(self, race_id, swimmer_ids):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Deletes all particpants
+        c.execute(f"""
+            DELETE FROM Participant
+            WHERE race_id = ?
+        """, (race_id,))
+
+        # Adds the participants
+        for swimmer_id in swimmer_ids:
+            c.execute("""
+                INSERT INTO Participant (
+                    race_id, user_id)
+                VALUES (?, ?)
+            """, (race_id, swimmer_id))
+
+        self.conn.commit()
+
+    def get_races(self, event_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all the races in the event
+        c.execute("""
+            SELECT *
+            FROM Race
+            WHERE event_id = ?
+            ORDER BY (
+                SELECT lane_no
+                FROM Lane
+            )
+        """, (event_id,))
+
+        return c.fetchall()
+
+    def get_participants(self, race_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all the participants in the race
+        c.execute("""
+            SELECT user_id
+            FROM Participant
+            WHERE race_id = ?
+        """, (race_id,))
+        return c.fetchall()
 
 # If database.py is the file being run
 if __name__ == '__main__':

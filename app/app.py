@@ -141,10 +141,47 @@ class Event:
         self.stroke = details[9]
         self.live = details[10]
 
+        self.races = list(map(Race, db.get_races(self.id)))
+
     @property
     def name(self):
+        # Format the name of the event
+        age_range = f'{self.age_range} ' if self.age_range != 'all' else ''
         parts = f'{self.parts}x' if self.parts > 1 else ''
-        return f"{self.age_range} {self.gender.capitalize()} {parts}{self.length}m {self.stroke.capitalize()}"
+        return f'{age_range}{self.gender.capitalize()} {parts}{self.length}m {self.stroke.capitalize()}'
+
+    def can_swim(self, user):
+        if user.gender == 'male' and self.gender == 'boys':
+            return True
+        if user.gender == 'female' and self.gender == 'girls':
+            return True
+        if self.gender == 'mixed':
+            return True
+        return False
+
+    def lane_participant(self, lane, swimmer):
+        for race in self.races:
+            # Checks if the event and lane match the race
+            if self.id == race.event_id and lane.id == race.lane_id:
+                # Checks if the swimmer is in the matched race
+                if swimmer.id in race.participants:
+                    return True
+        return False
+
+class Race:
+
+    def __init__(self, details):
+
+        self.id = details[0]
+        self.lane_id = details[1]
+        self.event_id = details[2]
+
+        self.heat = details[3]
+        self.time = details[4]
+
+        self.participants = list()
+        for participant in db.get_participants(self.id):
+            self.participants.append(participant[0])
 
 # Checks a user's token
 def check_token():
@@ -723,6 +760,7 @@ def manage():
     schools = map(School, db.get_other_schools(user.school.id))
     lanes = list(map(Lane, db.get_lanes(gala.id)))
     events = list(map(Event, db.get_events(gala.id)))
+    swimmers = list(map(User, db.get_swimmers(user.school.id)))
 
     return render_template(
         'managegala.html',
@@ -732,7 +770,8 @@ def manage():
         gala=gala,
         schools=schools,
         lanes=lanes,
-        events=events
+        events=events,
+        swimmers=swimmers
     )
 
 # The route for the update gala method
@@ -757,7 +796,6 @@ def update_gala_method():
 
     # Checks if the schools are valid
     for school_id in schools:
-        print(school_id, type(school_id))
         if not db.get_school(int(school_id)):
             return 'Invalid school', 400
 
@@ -792,8 +830,7 @@ def update_gala_method():
         if school_id not in gala_schools:
             db.add_gala_school(gala_id, school_id)
 
-    # Redirects to the manage page
-    return redirect('/manage')
+    return 'ok'
 
 # The route for the add lane method
 @app.route('/add_lane', methods=['POST'])
@@ -852,7 +889,7 @@ def update_lanes_method():
     gala_id = db.get_upcoming_gala()[0]
     db.update_lanes(gala_id, lanes)
 
-    return redirect('/manage')
+    return 'ok'
 
 # The route for the add event method
 @app.route('/add_event', methods=['POST'])
@@ -911,31 +948,78 @@ def add_event_method():
 @app.route('/update_events', methods=['POST'])
 def update_events_method():
 
-        # Checks if the user is logged in
-        if not check_token():
-            return redirect('/login')
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
 
-        token = request.cookies['token']
-        user = get_user(db.get_user_id(token))
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
 
-        # Checks if the user is a coach
-        if not user.coach:
-            return 'You do not have permission to do this', 403
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
 
-        # Checks if the user has provided a list of event_ids and event_nos
-        if 'events' not in request.form:
-            return 'Events not provided', 400
-        events = request.form['events']
+    # Checks if the user has provided a list of event_ids and event_nos
+    if 'events' not in request.form:
+        return 'Events not provided', 400
+    events = request.form['events']
 
-        # Converts the str to a list
-        events = events[1:-1].split(',')
-        # events = list(map(lambda x: int(x), events))
+    # Converts the str to a list
+    events = events[1:-1].split(',')
 
-        # Updates the events
-        gala_id = db.get_upcoming_gala()[0]
-        db.update_events(gala_id, events)
+    # Updates the events
+    gala_id = db.get_upcoming_gala()[0]
+    db.update_events(gala_id, events)
 
-        return redirect('/manage')
+    return 'ok'
+
+# The route for the update race method
+@app.route('/update_race', methods=['POST'])
+def update_race_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided the event id
+    if 'event_id' not in request.form:
+        return 'Event id not provided', 400
+    event_id = request.form['event_id']
+
+    # Checks if the user has provided the lane id
+    if 'lane_id' not in request.form:
+        return 'Lane id not provided', 400
+    lane_id = request.form['lane_id']
+
+    # Checks if the user has provided a list of swimmer_ids
+    if 'swimmer_ids' not in request.form:
+        return 'Swimmer ids not provided', 400
+    swimmer_ids = request.form['swimmer_ids'].split(',')
+
+    if swimmer_ids == ["null"] or swimmer_ids == [""]:
+        swimmer_ids = list()
+
+    # Gets the race or creates it if it doesn't exist
+    race = db.get_race(event_id, lane_id, heat=1)
+    if not race and swimmer_ids:
+        race = db.add_race(event_id, lane_id, heat=1)
+
+    # Updates the race participants
+    db.update_participants(race[0], swimmer_ids)
+
+    # Removes the race if there are no participants
+    if not race and not swimmer_ids:
+        db.remove_race(event_id, lane_id, heat=1)
+
+    return 'ok'
+
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

@@ -43,7 +43,20 @@
                 {% endfor %}
             </td>
             {% for lane in lanes %}
-            <td></td>
+            <td>
+                <select class="selectpicker" onchange="update_race(event)" required>
+                    <option selected value>--</option>
+                    {% for swimmer in swimmers %}
+                    {{ event.gender }}{{ swimmer.gender }}
+                    {% if event.can_swim(swimmer) %}
+                    <option value={{ swimmer.id }} class="{{ 'important' if swimmer.fav_stroke == event.stroke else '' }}"
+                        {{ 'selected' if event.lane_participant(lane, swimmer) else '' }}>
+                        {{ swimmer.name }} {{ swimmer.surname }}
+                        </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </td>
             {% endfor %}
             <td class="remove-event">
                 <img src="static/images/cross.png" onclick="remove_event(event)">

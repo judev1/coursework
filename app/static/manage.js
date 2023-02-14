@@ -140,6 +140,7 @@ function add_event(form, response) {
 
     // Include the event information in the cell
     var age_group = form.get("age_group") + " ";
+    if (age_group == "all ") { age_group = ""; }
     var group = form.get("group").slice(0, 1).toUpperCase() + form.get("group").slice(1) + " ";
     var parts = form.get("parts") + "x";
     if (parts == "1x") { parts = ""; }
@@ -185,6 +186,38 @@ function update_events(event) {
     // Create an XMLHttpRequest object
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/update_events");
+
+    // Set up a handler for when the request finishes
+    xhr.onload = function () {
+        if (xhr.status != 200) {
+            alert(xhr.responseText)
+        }
+    }
+
+    // Send the data to the server
+    xhr.send(formData);
+}
+
+function update_race(event) {
+
+    // Get the lane and event id
+    var cell = $(event.target).parent().parent();
+    var event_id = cell.parent().attr("event-id");
+    var index = cell.parent().children().index(cell)
+    var lane_id = $(".gala th").eq(index).attr("lane-id");
+
+    // Get the swimmers id
+    var swimmer_ids = $(event.target).val();
+
+    // Create a FormData object
+    var formData = new FormData();
+    formData.append("event_id", event_id);
+    formData.append("lane_id", lane_id);
+    formData.append("swimmer_ids", swimmer_ids);
+
+    // Create an XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/update_race");
 
     // Set up a handler for when the request finishes
     xhr.onload = function () {

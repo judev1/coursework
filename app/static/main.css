@@ -938,3 +938,29 @@ input[type=checkbox]:checked + label::after {
 .remove-event img:hover {
     opacity: 0.6 !important;
 }
+
+.important {
+    background: rgba(255, 255, 0, 0.2) !important;
+}
+
+/* .important .text {
+    color: white !important;
+} */
+
+.gala td .dropdown {
+    width: 100px !important;
+    margin: 0 !important;
+}
+
+.gala td .dropdown .btn {
+    padding-left: 0 8px;
+    /* padding-right: 8px; */
+}
+
+.gala td .dropdown .dropdown-menu {
+    width: 100px !important;
+}
+
+.gala td .dropdown .dropdown-menu .dropdown-item {
+    padding: 0 8px;
+}
