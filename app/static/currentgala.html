@@ -1,0 +1,71 @@
+{% extends "template.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+{% endblock %}
+{% block body %}
+<div>
+    <h1 class="spacy">Upcoming gala</h1>
+</div>
+<table class="gala">
+    <thead class="lanes">
+        <tr>
+            <th class="blank dragtable-drag-boundary"></th>
+            <th class="blank dragtable-drag-boundary"></th>
+            {% for lane in lanes %}
+            <th lane-id={{ lane.id }}>
+                Lane {{ lane.number }}
+            </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in events %}
+        <tr event-id={{ event.id }}>
+            <td>{{ event.name }}</td>
+            <td class="heats">
+                {% for i in range(event.heats) %}
+                <div>Heat {{ i + 1}}</div>
+                {% endfor %}
+            </td>
+            {% for lane in lanes %}
+            <td>
+                {% for swimmer in swimmers %}
+                {% if event.lane_participant(lane, swimmer) %}
+                {{ swimmer.name }} {{ swimmer.surname }}
+                {% endif %}
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="sidebar">
+    <form class="form">
+        <div class="data">
+            <h1 class="text">Competing Schools:</h1>
+            {% set names = [] %}
+            {% for school in schools %}
+            {{ '' if names.append(school.name) else '' }}
+            {% endfor %}
+            {{ ", ".join(names) }}
+        </div>
+        <br><br>
+        <h1 class="text">Host:</h1>
+        <div class="data">
+            {% for school in gala.schools %}
+            {% if school.id == gala.host.id %}
+            {{ school.name }}
+            {% endif %}
+            {% endfor %}
+        </div>
+        <br><br>
+        <h1 class="text">Date:</h1>
+        <div class="data">{{ gala.date }}</div>
+    </form>
+</div>
+{% endblock %}

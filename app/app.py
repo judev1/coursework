@@ -1023,6 +1023,37 @@ def update_race_method():
 
     return 'ok'
 
+# The route for the current gala page
+@app.route('/current', methods=['GET'])
+def current_gala_page():
+
+    # Checks to see if there is a current gala on
+    status = db.get_gala_status()
+    if status == 0:
+        return redirect('/')
+    elif status == 2:
+        return redirect('/live_gala')
+
+    # Assumes that the user is here for Rugby's gala
+    school_id = 1
+
+    gala = Gala(db.get_upcoming_gala())
+    schools = map(School, db.get_other_schools(school_id))
+    lanes = list(map(Lane, db.get_lanes(gala.id)))
+    events = list(map(Event, db.get_events(gala.id)))
+    swimmers = list(map(User, db.get_swimmers(school_id)))
+
+    return render_template(
+        'currentgala.html',
+        main=False,
+        user=get_logged_in_user(),
+        status=db.get_gala_status(),
+        gala=gala,
+        schools=schools,
+        lanes=lanes,
+        events=events,
+        swimmers=swimmers
+    )
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
