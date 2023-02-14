@@ -1055,6 +1055,40 @@ def current_gala_page():
         swimmers=swimmers
     )
 
+# The route for the get swimmers method
+@app.route('/get_swimmers', methods=['POST'])
+def get_swimmers_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is a coach
+    if not user.coach:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided the event id
+    if 'event_id' not in request.form:
+        return 'Event id not provided', 400
+    event_id = request.form['event_id']
+
+
+    swimmers = list(map(User, db.get_swimmers(user.school.id)))
+    event = Event(db.get_event_by_id(event_id))
+
+    event_swimmers = list()
+    for swimmer in swimmers:
+        if event.can_swim(swimmer):
+            # Adds the swimmer's id, name and if the event is their favourite
+            name = swimmer.name + ' ' + swimmer.surname
+            fav_stroke = swimmer.fav_stroke == event.stroke
+            event_swimmers.append([swimmer.id, name, fav_stroke])
+
+    return event_swimmers
+
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
 # by itself for debugging)

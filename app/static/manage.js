@@ -26,6 +26,22 @@ function update_gala(event) {
     xhr.send(formData);
 }
 
+function get_swimmers(event_id) {
+
+    // Create a FormData object
+    var formData = new FormData();
+    formData.append("event_id", event_id);
+
+    // Create an XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/get_swimmers", false);
+
+    // Send the data to the server
+    xhr.send(formData);
+
+    return JSON.parse(xhr.responseText);
+}
+
 function add_lane_to_table(lane_id) {
 
     // Add a new lane column to the gala table head
@@ -42,7 +58,21 @@ function add_lane_to_table(lane_id) {
 
     // Add a new lane column to the gala table body
     $(".gala").find("tbody").find("tr").slice(1).each(function() {
-        $(this).children().eq(-2).after("<td></td>");
+        var html = `<td><select class='selectpicker' onchange='update_race(event)' required>
+            <option selected value>--</option>`
+
+        var event_id = $(this).attr("event-id");
+        var swimmers = get_swimmers(event_id);
+        swimmers.forEach(function(swimmer) {
+            var important = swimmer[2] ? "important" : "";
+            html += `
+                <option value=${swimmer[0]} class=${important}>
+                    ${swimmer[1]}
+                </option>
+            `;
+        });
+        $(this).children().eq(-2).after(html + "</select></td>");
+        $(this).children().eq(-2).find("select").selectpicker();
     });
 }
 
@@ -151,10 +181,24 @@ function add_event(form, response) {
 
     $(row).append("<td>Heat 1</td>");
 
+    var swimmers = get_swimmers(response["event_id"]);
+    var html = `<td><select class='selectpicker' onchange='update_race(event)' required>
+        <option selected value>--</option>`
+        swimmers.forEach(function(swimmer) {
+            var important = swimmer[2] ? "important" : "";
+            html += `
+                <option value=${swimmer[0]} class=${important}>
+                    ${swimmer[1]}
+                </option>
+            `;
+        });
+    html += "</select></td>";
+
     // Fill the event row empty cells
     var lanes = $(".gala").find("thead").find("th:not(.blank)").length;
     for (var i = 0; i < lanes; i++) {
-        $(row).append("<td></td>");
+        // $(row).append("<td></td>");
+        $(row).append(html).find("select").selectpicker();
     }
 
     // Add a remove event button at the end

@@ -797,6 +797,19 @@ class Database:
         """, (race_id,))
         return c.fetchall()
 
+    def get_event_by_id(self, event_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the event
+        c.execute("""
+            SELECT *
+            FROM Event
+            WHERE event_id = ?
+        """, (event_id,))
+        return c.fetchone()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db
