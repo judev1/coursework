@@ -165,7 +165,7 @@ class Event:
             # Checks if the event and lane match the race
             if self.id == race.event_id and lane.id == race.lane_id:
                 # Checks if the swimmer is in the matched race
-                if swimmer.id in race.participants:
+                if swimmer.id in race.participant_ids:
                     return True
         return False
 
@@ -189,8 +189,8 @@ class Race:
         self.heat = details[3]
         self.time = details[4]
 
-        participant_ids = map(lambda x: x[0], db.get_participants(self.id))
-        self.participants = list(map(User, map(db.get_user, participant_ids)))
+        self.participant_ids = list(map(lambda x: x[0], db.get_participants(self.id)))
+        self.participants = list(map(User, map(db.get_user, self.participant_ids)))
 
     def swimmer_names(self):
         names = list()
@@ -1181,6 +1181,31 @@ def manage_live_gala_page():
         lanes=lanes,
         events=events
     )
+
+# The route for the make gala active method
+@app.route('/make_active/<gala_id>', methods=['GET'])
+def make_gala_active_method(gala_id):
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the gala is currently live
+    status = db.get_gala_status()
+    if status != 2:
+        return 'Gala is not currently live', 400
+
+    # Makes the gala live
+    db.make_gala_active(gala_id)
+
+    return redirect('/manage')
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
