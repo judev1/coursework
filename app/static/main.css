@@ -5,6 +5,7 @@
     --blue-light: #68BAF1;
     --yellow: #E5A100;
     --red: #AF2A40;
+    --green: #2A9F40;
     --grey: #EDF0F2;
 }
 
@@ -738,11 +739,18 @@ input[type=checkbox]:checked + label::after {
     color: white !important;
 }
 
-.red.button button:hover {
+.green.button button {
+    background: var(--green);
+    color: white !important;
+}
+
+.red.button button:hover,
+.green.button button:hover {
     outline: 1px solid black;
 }
 
-.red.button button:active {
+.red.button button:active,
+.green.button button:active {
     outline: 2px solid black;
 }
 
@@ -963,4 +971,47 @@ input[type=checkbox]:checked + label::after {
 
 .gala td .dropdown .dropdown-menu .dropdown-item {
     padding: 0 8px;
+}
+
+.livegala td {
+    padding: 10px;
+    vertical-align: text-top;
+}
+
+.livegala tr:nth-child(2n - 1) {
+    background: var(--grey);
+}
+
+.livegala td:nth-child(1) {
+    padding: 10px;
+}
+
+.livegala .event {
+    padding: 0;
+}
+
+.livegala .event table {
+    width: 100%;
+    vertical-align: middle;
+}
+
+.livegala .event tr {
+    background: none;
+}
+
+.livegala .event td:nth-child(1) {
+    width: 70px;
+}
+
+.livegala .event td:nth-child(2) {
+    width: 120px;
+}
+
+.livegala .event table td:nth-child(4) {
+    width: 50px;
+}
+
+.status[status="0"]:after {
+    content: "Not started";
+    color: var(--red) !important;
 }

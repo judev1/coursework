@@ -1,0 +1,75 @@
+{% extends "template.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+{% endblock %}
+{% block body %}
+<div>
+    <h1 class="spacy">Live gala</h1>
+</div>
+<table class="livegala">
+    {% for event in events %}
+    {% for i in range(event.heats) %}
+    <tr event-id={{ event.id }}>
+        {% if i == 0 %}
+        <td>
+            {{ event.number }}.
+        </td>
+        {% endif %}
+        <td>
+            {{ event.name }}
+            {% if heats.__len__() > 1 %}
+            Heat {{ i + 1 }}
+            {% endif %}
+        </td>
+        <td class="status" status=0></td>
+        <td class="event">
+            <table>
+                {% for lane, race in event.list_races(lanes) %}
+                <tr>
+                    <td>
+                        Lane {{ lane.number }}
+                    </td>
+                    <td>
+                        {{ race.participants[0].school.name }}
+                    </td>
+                    <td>
+                        {{ race.swimmer_names() }}
+                    </td>
+                    <td>
+                        --:--.--
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+</table>
+<div class="sidebar">
+    <form class="form">
+        <h1 class="text">Score</h1>
+        {% for school in schools %}
+        <div>
+            {{ school.name }} - 0
+        </div>
+        {% endfor %}
+        <br>
+        <div class="button">
+            <h1 class="text">Event #1</h1><br>
+            <button type="button">Start event</button>
+        </div>
+        <br><br>
+        <div class="button">
+            <button type="button">Edit gala</button>
+        </div>
+        <div class="red button">
+            <button type="button">End gala</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

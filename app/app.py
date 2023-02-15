@@ -169,6 +169,15 @@ class Event:
                     return True
         return False
 
+    def list_races(self, lanes):
+        for lane in lanes:
+            for race in self.races:
+                # Checks if there is a race in the event for the lane
+                if race.lane_id == lane.id:
+                    # Yields the lane and race back so it can be looped over
+                    yield lane, race
+                    break
+
 class Race:
 
     def __init__(self, details):
@@ -180,9 +189,14 @@ class Race:
         self.heat = details[3]
         self.time = details[4]
 
-        self.participants = list()
-        for participant in db.get_participants(self.id):
-            self.participants.append(participant[0])
+        participant_ids = map(lambda x: x[0], db.get_participants(self.id))
+        self.participants = list(map(User, map(db.get_user, participant_ids)))
+
+    def swimmer_names(self):
+        names = list()
+        for participant in self.participants:
+            names.append(f'{participant.name} {participant.surname}')
+        return ', '.join(names)
 
 # Checks a user's token
 def check_token():
@@ -1128,6 +1142,45 @@ def make_gala_live_method(gala_id):
     db.make_gala_live(gala_id)
 
     return redirect('/manage_live')
+
+# The route for the manage live gala page
+@app.route('/manage_live', methods=['GET'])
+def manage_live_gala_page():
+
+    # Checks to see if there is a current gala on
+    status = db.get_gala_status()
+    if status == 0:
+        return redirect('/')
+    elif status == 1:
+        return redirect('/manage')
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    gala = Gala(db.get_upcoming_gala())
+    school_ids = db.get_gala_schools(gala.id)
+    schools = map(School, map(db.get_school, school_ids))
+    lanes = list(map(Lane, db.get_lanes(gala.id)))
+    events = list(map(Event, db.get_events(gala.id)))
+
+    return render_template(
+        'managelive.html',
+        main=False,
+        user=get_logged_in_user(),
+        status=db.get_gala_status(),
+        gala=gala,
+        schools=schools,
+        lanes=lanes,
+        events=events
+    )
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
