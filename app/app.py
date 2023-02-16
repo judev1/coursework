@@ -1070,7 +1070,7 @@ def current_gala_page():
     if status == 0:
         return redirect('/')
     elif status == 2:
-        return redirect('/live_gala')
+        return redirect('/live')
 
     # Assumes that the user is here for Rugby's gala
     school_id = 1
@@ -1264,6 +1264,34 @@ def update_event_status_method():
 
     # Returns the status of the event
     return {'status': event.status}
+
+# The route for the manage live gala page
+@app.route('/live', methods=['GET'])
+def live_gala_page():
+
+    # Checks to see if there is a current gala on
+    status = db.get_gala_status()
+    if status == 0:
+        return redirect('/')
+    elif status == 1:
+        return redirect('/current')
+
+    gala = Gala(db.get_upcoming_gala())
+    school_ids = db.get_gala_schools(gala.id)
+    schools = map(School, map(db.get_school, school_ids))
+    lanes = list(map(Lane, db.get_lanes(gala.id)))
+    events = list(map(Event, db.get_events(gala.id)))
+
+    return render_template(
+        'livegala.html',
+        main=False,
+        user=get_logged_in_user(),
+        status=db.get_gala_status(),
+        gala=gala,
+        schools=schools,
+        lanes=lanes,
+        events=events
+    )
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
