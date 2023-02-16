@@ -1011,7 +1011,34 @@ input[type=checkbox]:checked + label::after {
     width: 50px;
 }
 
+.status {
+    cursor: pointer;
+    outline-offset: -1px;
+}
+
 .status[status="0"]:after {
     content: "Not started";
     color: var(--red) !important;
+}
+
+.status[status="1"]:after {
+    content: "In progress";
+    color: var(--yellow) !important;
+}
+
+.status[status="2"]:after {
+    content: "Completed";
+    color: var(--green) !important;
+}
+
+.status[status="0"]:hover {
+    outline: 1px dotted var(--red);
+}
+
+.status[status="1"]:hover {
+    outline: 1px dotted var(--yellow);
+}
+
+.status[status="2"]:hover {
+    outline: 1px dotted var(--green);
 }

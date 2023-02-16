@@ -1,10 +1,7 @@
 {% extends "template.html" %}
 {% block head %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-
+<script type="text/javascript" src="/static/managelive.js"></script>
 {% endblock %}
 {% block body %}
 <div>
@@ -13,7 +10,7 @@
 <table class="livegala">
     {% for event in events %}
     {% for i in range(event.heats) %}
-    <tr event-id={{ event.id }}>
+    <tr event-id={{ event.id }} heat={{ i + 1 }}>
         {% if i == 0 %}
         <td>
             {{ event.number }}.
@@ -25,7 +22,7 @@
             Heat {{ i + 1 }}
             {% endif %}
         </td>
-        <td class="status" status=0></td>
+        <td class="status" status={{ event.status }} onclick="update_status(event)"></td>
         <td class="event">
             <table>
                 {% for lane, race in event.list_races(lanes) %}
@@ -59,15 +56,11 @@
         </div>
         {% endfor %}
         <br>
-        <div class="button">
-            <h1 class="text">Event #1</h1><br>
-            <button type="button">Start event</button>
-        </div>
         <br><br>
         <div class="button">
             <button type="button" onclick="window.location.href='/make_active/{{ gala.id }}'">Edit gala</button>
         </div>
-        <div class="red button">
+        <div class="green button">
             <button type="button">End gala</button>
         </div>
     </form>

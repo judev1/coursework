@@ -834,6 +834,18 @@ class Database:
         """, (gala_id,))
         self.conn.commit()
 
+    def update_event_live(self, event_id, is_live):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Updates the event status
+        c.execute("""
+            UPDATE Event
+            SET is_live = ?
+            WHERE event_id = ?
+        """, (is_live, event_id))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

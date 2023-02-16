@@ -151,6 +151,15 @@ class Event:
         parts = f'{self.parts}x' if self.parts > 1 else ''
         return f'{age_range}{self.gender.capitalize()} {parts}{self.length}m {self.stroke.capitalize()}'
 
+    @property
+    def status(self):
+        if self.live:
+            return 1
+        for race in self.races:
+            if race.time:
+                return 2
+        return 0
+
     def can_swim(self, user):
         if user.gender == 'male' and self.gender == 'boys':
             return True
@@ -1206,6 +1215,55 @@ def make_gala_active_method(gala_id):
     db.make_gala_active(gala_id)
 
     return redirect('/manage')
+
+# The route for the update event status method
+@app.route('/update_event_status', methods=['POST'])
+def update_event_status_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided the event id
+    if 'event_id' not in request.form:
+        return 'Event id not provided', 400
+    event_id = request.form['event_id']
+
+    # Checks if the user has provided the heat
+    if 'heat' not in request.form:
+        return 'Heat not provided', 400
+    heat = request.form['heat']
+
+    # Checks if the user has provided the current status
+    if 'status' not in request.form:
+        return 'Status not provided', 400
+    status = int(request.form['status'])
+
+    gala = Gala(db.get_upcoming_gala())
+
+    if status in [0, 2]:
+
+        # Checks if there are any live events
+        for event in map(Event, db.get_events(gala.id)):
+            if event.live != 0:
+                return 'There is already a live event', 400
+
+        # Update the event status
+        db.update_event_live(event_id, heat)
+        return {'status': 1}
+
+    db.update_event_live(event_id, 0)
+    event = Event(db.get_event_by_id(event_id))
+
+    # Returns the status of the event
+    return {'status': event.status}
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
