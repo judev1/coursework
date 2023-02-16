@@ -22,7 +22,7 @@
             Heat {{ i + 1 }}
             {% endif %}
         </td>
-        <td class="status" status={{ event.status }} onclick="update_status(event)"></td>
+        <td class="status modify" status={{ event.status }} onclick="update_status(event)"></td>
         <td class="event">
             <table>
                 {% for lane, race in event.list_races(lanes) %}

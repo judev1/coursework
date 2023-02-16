@@ -1011,7 +1011,7 @@ input[type=checkbox]:checked + label::after {
     width: 50px;
 }
 
-.status {
+.status.modify {
     cursor: pointer;
     outline-offset: -1px;
 }
@@ -1031,14 +1031,14 @@ input[type=checkbox]:checked + label::after {
     color: var(--green) !important;
 }
 
-.status[status="0"]:hover {
+.status.modify[status="0"]:hover {
     outline: 1px dotted var(--red);
 }
 
-.status[status="1"]:hover {
+.status.modify[status="1"]:hover {
     outline: 1px dotted var(--yellow);
 }
 
-.status[status="2"]:hover {
+.status.modify[status="2"]:hover {
     outline: 1px dotted var(--green);
 }
