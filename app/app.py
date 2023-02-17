@@ -1148,7 +1148,7 @@ def make_gala_live_method(gala_id):
         return 'Gala is not currently being set up', 400
 
     # Makes the gala live
-    db.make_gala_live(gala_id)
+    db.update_gala_status(gala_id, 2)
 
     return redirect('/manage_live')
 
@@ -1211,8 +1211,8 @@ def make_gala_active_method(gala_id):
     if status != 2:
         return 'Gala is not currently live', 400
 
-    # Makes the gala live
-    db.make_gala_active(gala_id)
+    # Makes the gala active
+    db.update_gala_status(gala_id, 1)
 
     return redirect('/manage')
 
@@ -1292,6 +1292,31 @@ def live_gala_page():
         lanes=lanes,
         events=events
     )
+
+# The route for the end gala method
+@app.route('/end_gala/<gala_id>', methods=['GET'])
+def end_gala_method(gala_id):
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the gala is currently live
+    status = db.get_gala_status()
+    if status != 2:
+        return 'Gala is not currently live', 400
+
+    # Ends the gala
+    db.update_gala_status(gala_id, 0)
+
+    return redirect('/gala/' + gala_id)
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

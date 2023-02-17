@@ -810,28 +810,16 @@ class Database:
         """, (event_id,))
         return c.fetchone()
 
-    def make_gala_live(self, gala_id):
+    def update_gala_status(self, gala_id, status):
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
 
         # Updates the gala status
         c.execute("""
             UPDATE Gala
-            SET status = 2
+            SET status = ?
             WHERE gala_id = ?
-        """, (gala_id,))
-        self.conn.commit()
-
-    def make_gala_active(self, gala_id):
-        # Creates a cursor object to execute SQL commands
-        c = self.conn.cursor()
-
-        # Updates the gala status
-        c.execute("""
-            UPDATE Gala
-            SET status = 1
-            WHERE gala_id = ?
-        """, (gala_id,))
+        """, (gala_id, status))
         self.conn.commit()
 
     def update_event_live(self, event_id, is_live):
