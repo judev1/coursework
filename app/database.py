@@ -819,7 +819,7 @@ class Database:
             UPDATE Gala
             SET status = ?
             WHERE gala_id = ?
-        """, (gala_id, status))
+        """, (status, gala_id))
         self.conn.commit()
 
     def update_event_live(self, event_id, is_live):
