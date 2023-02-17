@@ -1042,3 +1042,42 @@ input[type=checkbox]:checked + label::after {
 .status.modify[status="2"]:hover {
     outline: 1px dotted var(--green);
 }
+
+/* Past galas */
+
+.pastgalas {
+    width: 100%;
+}
+
+.pastgalas tr {
+    width: 100%;
+    cursor: pointer;
+}
+
+.pastgalas td {
+    padding: 10px;
+}
+
+.pastgalas td:nth-child(1) {
+    width: 83px;
+}
+
+.pastgalas tr:hover {
+    outline-offset: -1px;
+    outline: 1px dotted var(--blue);
+}
+
+.pastgalas td img {
+    width: 20px;
+    height: 20px;
+    transform: translateY(-1px);
+    margin-right: 5px;
+}
+
+.pastgalas td:nth-child(2) {
+    width: 100px;
+}
+
+.pastgalas tr:nth-child(odd) td {
+    background: var(--grey);
+}

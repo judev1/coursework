@@ -1,0 +1,60 @@
+{% extends "template.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+{% endblock %}
+{% block body %}
+<div>
+    <h1 class="spacy">{{ gala.competitors }}</h1>
+</div>
+<table class="livegala">
+    {% for event in events %}
+    {% for i in range(event.heats) %}
+    <tr event-id={{ event.id }} heat={{ i + 1 }}>
+        {% if i == 0 %}
+        <td>
+            {{ event.number }}.
+        </td>
+        {% endif %}
+        <td>
+            {{ event.name }}
+            {% if heats.__len__() > 1 %}
+            Heat {{ i + 1 }}
+            {% endif %}
+        </td>
+        <td class="event">
+            <table>
+                {% for lane, race in event.list_races(lanes) %}
+                <tr>
+                    <td>
+                        Lane {{ lane.number }}
+                    </td>
+                    <td>
+                        {{ race.participants[0].school.name }}
+                    </td>
+                    <td>
+                        {{ race.swimmer_names() }}
+                    </td>
+                    <td>
+                        --:--.--
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
+</table>
+<div class="sidebar">
+    <form class="form">
+        <h1 class="text">{{ gala.date }}</h1>
+        <br><br>
+        <h1 class="text">Score</h1>
+        {% for school in schools %}
+        <div>
+            {{ school.name }} - 0
+        </div>
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}

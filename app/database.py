@@ -834,6 +834,28 @@ class Database:
         """, (is_live, event_id))
         self.conn.commit()
 
+    def get_galas(self, school_id):
+
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets all the galas
+        c.execute("""
+            SELECT gala_id
+            FROM Gala_School
+            WHERE school_id = ? AND  gala_id IN (
+                SELECT gala_id
+                FROM Gala
+                WHERE status = 0
+            )
+            ORDER BY (
+                SELECT date
+                FROM Gala
+                WHERE gala_id = Gala_School.gala_id
+            ) DESC
+        """, (school_id,))
+        return c.fetchall()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

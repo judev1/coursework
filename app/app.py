@@ -116,6 +116,11 @@ class Gala:
         self.school_ids = db.get_gala_schools(self.id)
         self.schools = map(School, map(db.get_school, self.school_ids))
 
+    @property
+    def competitors(self):
+        names = map(lambda school: school.name, self.schools)
+        return ' vs '.join(names)
+
 class Lane:
 
     def __init__(self, details):
@@ -897,7 +902,7 @@ def add_lane_method():
     lane_id = db.get_lane(gala.id, lane)[0]
 
     # Returns the lane id
-    return {"lane_id": lane_id}
+    return {'lane_id': lane_id}
 
 # The route for the update lanes method
 @app.route('/update_lanes', methods=['POST'])
@@ -980,7 +985,7 @@ def add_event_method():
     event_id = db.get_event(gala_id, event_no)[0]
 
     # Returns the event id
-    return {"event_id": event_id}
+    return {'event_id': event_id}
 
 # The route for the update events method
 @app.route('/update_events', methods=['POST'])
@@ -1041,7 +1046,7 @@ def update_race_method():
         return 'Swimmer ids not provided', 400
     swimmer_ids = request.form['swimmer_ids'].split(',')
 
-    if swimmer_ids == ["null"] or swimmer_ids == [""]:
+    if swimmer_ids == ['null'] or swimmer_ids == ['']:
         swimmer_ids = list()
 
     # Gets the race or creates it if it doesn't exist
@@ -1317,6 +1322,45 @@ def end_gala_method(gala_id):
     db.update_gala_status(gala_id, 0)
 
     return redirect('/gala/' + gala_id)
+
+# The route for the past galas page
+@app.route('/galas', methods=['GET'])
+def past_galas_page():
+
+    # Assumes that the user is here for Rugby's gala
+    school_id = 1
+
+    gala_ids = map(lambda x: x[0], db.get_galas(school_id))
+    galas = map(Gala, map(db.get_gala, gala_ids))
+
+    return render_template(
+        'pastgalas.html',
+        main=False,
+        user=get_logged_in_user(),
+        status=db.get_gala_status(),
+        galas=galas
+    )
+
+# The route for the gala page
+@app.route('/gala/<gala_id>', methods=['GET'])
+def gala_page(gala_id):
+
+    gala = Gala(db.get_gala(gala_id))
+    school_ids = db.get_gala_schools(gala_id)
+    schools = map(School, map(db.get_school, school_ids))
+    lanes = list(map(Lane, db.get_lanes(gala_id)))
+    events = list(map(Event, db.get_events(gala_id)))
+
+    return render_template(
+        'gala.html',
+        main=False,
+        user=get_logged_in_user(),
+        status=db.get_gala_status(),
+        gala=gala,
+        schools=schools,
+        lanes=lanes,
+        events=events
+    )
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

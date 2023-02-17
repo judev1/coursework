@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+{% endblock %}
+{% block body %}
+<div>
+    <h1 class="spacy">Past galas</h1>
+</div>
+<table class="pastgalas">
+    {% for gala in galas %}
+    <tr onclick="window.location.href='/gala/{{ gala.id }}'">
+        <td>
+            <img src="/static/images/eye.png"/>
+            View
+        </td>
+        <td>
+            {{ gala.date }}
+        </td>
+        <td>
+            {{ gala.competitors }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
