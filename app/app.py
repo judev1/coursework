@@ -1421,7 +1421,8 @@ def update_volunteer_method():
     TEXT = (
         'You have been invited to volunteer at the upcoming gala. '
         'Please use the following link to record the results:\n\n'
-        'https://www.rugbygala.com/volunteer/' + volunteer.code
+        'https://www.rugbygala.com/volunteer/' + volunteer.id +
+        '/' + volunteer.code
     )
 
     # Prepares the actual message
