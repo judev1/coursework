@@ -48,7 +48,9 @@
             <h1 class="text">Competing Schools:</h1>
             {% set names = [] %}
             {% for school in schools %}
+            {% if school.id in gala.school_ids %}
             {{ '' if names.append(school.name) else '' }}
+            {% endif %}
             {% endfor %}
             {{ ", ".join(names) }}
         </div>
