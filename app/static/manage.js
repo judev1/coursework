@@ -186,16 +186,22 @@ function add_event(form, response) {
     $(row).append("<td>Heat 1</td>");
 
     var swimmers = get_swimmers(response["event_id"]);
-    var html = `<td><select class='selectpicker' onchange='update_race(event)' required>
-        <option selected value>--</option>`
-        swimmers.forEach(function(swimmer) {
-            var important = swimmer[2] ? "important" : "";
-            html += `
-                <option value=${swimmer[0]} class=${important}>
-                    ${swimmer[1]}
-                </option>
-            `;
-        });
+    if (form.get("parts") == "1") {
+        var html = `<td><select class='selectpicker' onchange='update_race(event)' required>
+            <option selected value>--</option>`
+    } else {
+        // max options is equal to the number of parts
+        var html = `<td><select class='selectpicker' onchange='update_race(event)' required
+            multiple="true" data-max-options=${form.get("parts")} title="--">`
+    }
+    swimmers.forEach(function(swimmer) {
+        var important = swimmer[2] ? "important" : "";
+        html += `
+            <option value=${swimmer[0]} class=${important}>
+                ${swimmer[1]}
+            </option>
+        `;
+    });
     html += "</select></td>";
 
     // Fill the event row empty cells
@@ -226,7 +232,7 @@ function update_events(event) {
 
     // Add the event ids to the request
     var events = [];
-    $(".gala").find("tbody").find("tr").slice(1).each(function() {
+    $(".gala").find("tbody").find("tr").slice(2).each(function() {
         events.push(Number($(this).attr("event-id")));
     });
     formData.append("events", JSON.stringify(events));

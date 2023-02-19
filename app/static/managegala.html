@@ -55,15 +55,19 @@
             </td>
             {% for lane in lanes %}
             <td>
-                <select class="selectpicker" onchange="update_race(event)" required>
-                    <option selected value>--</option>
+                <select class="selectpicker" onchange="update_race(event)" required title="--"
+                    {% if event.parts > 1 %}
+                    multiple="true" data-max-options={{ event.parts }} title="--">
+                    {% else %}
+                    ><option selected value>--</option>
+                    {% endif %}
                     {% for swimmer in swimmers %}
                     {% if event.can_swim(swimmer) %}
                     <option value={{ swimmer.id }} class="{{ 'important' if swimmer.fav_stroke == event.stroke else '' }}"
                         {{ 'selected' if event.lane_participant(lane, swimmer) else '' }}>
                         {{ swimmer.name }} {{ swimmer.surname }}
-                        </option>
-                        {% endif %}
+                    </option>
+                    {% endif %}
                     {% endfor %}
                 </select>
             </td>
@@ -167,11 +171,6 @@
                     <option value="girls">Girls</option>
                     <option value="mixed">Mixed</option>
                 </select>
-            </div>
-            <div class="input">
-                <h1 class="text">Relay?
-                </h1><input class="checkbox" type="checkbox" id="relay" name="relay">
-                <label class="offset" for="relay"></label>
             </div>
             <br>
             <div class="button">
