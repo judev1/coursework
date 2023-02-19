@@ -1,48 +1,46 @@
 {% extends "template.html" %}
 {% block head %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
-
 {% endblock %}
 {% block body %}
 <div>
-    <h1 class="spacy">Upcoming gala</h1>
+    <h1 class="spacy">{{ gala.competitors }}</h1>
 </div>
-<table class="gala">
-    <thead class="lanes">
-        <tr>
-            <th class="blank dragtable-drag-boundary"></th>
-            <th class="blank dragtable-drag-boundary"></th>
-            {% for lane in lanes %}
-            <th lane-id={{ lane.id }}>
-                Lane {{ lane.number }}
-            </th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for event in events %}
-        <tr event-id={{ event.id }}>
-            <td>{{ event.name }}</td>
-            <td class="heats">
-                {% for i in range(event.heats) %}
-                <div>Heat {{ i + 1}}</div>
+<table class="livegala">
+    {% for event in events %}
+    {% for i in range(event.heats) %}
+    <tr event-id={{ event.id }} heat={{ i + 1 }}>
+        {% if i == 0 %}
+        <td>
+            {{ event.number }}.
+        </td>
+        {% endif %}
+        <td>
+            {{ event.name }}
+            {% if heats.__len__() > 1 %}
+            Heat {{ i + 1 }}
+            {% endif %}
+        </td>
+        <td class="event">
+            <table>
+                {% for lane, race in event.list_races(lanes) %}
+                <tr>
+                    <td>
+                        Lane {{ lane.number }}
+                    </td>
+                    <td>
+                        {{ race.participants[0].school.name }}
+                    </td>
+                    <td>
+                        {{ race.swimmer_names() }}
+                    </td>
+                </tr>
                 {% endfor %}
-            </td>
-            {% for lane in lanes %}
-            <td>
-                {% for swimmer in swimmers %}
-                {% if event.lane_participant(lane, swimmer) %}
-                {{ swimmer.name }} {{ swimmer.surname }}
-                {% endif %}
-                {% endfor %}
-            </td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
 </table>
 <div class="sidebar">
     <form class="form">

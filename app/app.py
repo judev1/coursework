@@ -114,7 +114,7 @@ class Gala:
         self.status = details[3]
 
         self.school_ids = db.get_gala_schools(self.id)
-        self.schools = map(School, map(db.get_school, self.school_ids))
+        self.schools = list(map(School, map(db.get_school, self.school_ids)))
 
     @property
     def competitors(self):
