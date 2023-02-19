@@ -130,6 +130,10 @@ class Lane:
 
         self.number = details[2]
 
+        self.volunteer = db.get_volunteer(self.id)
+        if self.volunteer:
+            self.volunteer = Volunteer(self.volunteer)
+
 class Event:
 
     def __init__(self, details):
@@ -211,6 +215,14 @@ class Race:
         for participant in self.participants:
             names.append(f'{participant.name} {participant.surname}')
         return ', '.join(names)
+
+class Volunteer:
+
+    def __init__(self, details):
+        self.id = details[0]
+        self.lane_id = details[1]
+        self.email = details[2]
+        self.code = details[3]
 
 # Checks a user's token
 def check_token():
@@ -1361,6 +1373,62 @@ def gala_page(gala_id):
         lanes=lanes,
         events=events
     )
+
+# The route for the update volunteer method
+@app.route('/update_volunteer', methods=['POST'])
+def update_volunteer_method():
+
+    # Checks if the user is logged in
+    if not check_token():
+        return redirect('/login')
+
+    token = request.cookies['token']
+    user = get_user(db.get_user_id(token))
+
+    # Checks if the user is an admin
+    if not user.admin:
+        return 'You do not have permission to do this', 403
+
+    # Checks if the user has provided the lane id
+    if 'lane_id' not in request.form:
+        return 'Lane id not provided', 400
+    lane_id = request.form['lane_id']
+
+    # Checks if the user has provided the volunteer email
+    if 'email' not in request.form:
+        return 'Volunteer email not provided', 400
+    email = request.form['email']
+
+    volunteer = db.get_volunteer(lane_id)
+    if volunteer:
+        volunteer = Volunteer(volunteer)
+        db.remove_volunteer(lane_id)
+
+        SUBJECT = 'Volunteering'
+        TEXT = 'You have been removed as a volunteer from the upcoming gala.'
+
+        # Prepares the actual message
+        message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(config['email'], volunteer.email, SUBJECT, TEXT)
+        server.sendmail(config['email'], volunteer.email, message)
+
+    if not email:
+        return 'ok'
+
+    db.add_volunteer(lane_id, email)
+    volunteer = Volunteer(db.get_volunteer(lane_id))
+
+    SUBJECT = 'Volunteering'
+    TEXT = (
+        'You have been invited to volunteer at the upcoming gala. '
+        'Please use the following link to record the results:\n\n'
+        'https://www.rugbygala.com/volunteer/' + volunteer.code
+    )
+
+    # Prepares the actual message
+    message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(config['email'], email, SUBJECT, TEXT)
+    server.sendmail(config['email'], email, message)
+
+    return 'ok'
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

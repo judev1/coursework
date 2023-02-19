@@ -56,8 +56,12 @@ function add_lane_to_table(lane_id) {
     var remove_row = $(".gala").find("tbody").find("tr")[0];
     $(remove_row).append("<td class='remove-lane' onclick='remove_lane(event)'>remove</td>");
 
+    // Add an add volunteer button to the gala table body
+    var volunteer_row = $(".gala").find("tbody").find("tr")[1];
+    $(volunteer_row).append("<td class='add-volunteer' onclick='add_volunteer(event)'>volunteer</td>");
+
     // Add a new lane column to the gala table body
-    $(".gala").find("tbody").find("tr").slice(1).each(function() {
+    $(".gala").find("tbody").find("tr").slice(2).each(function() {
         var html = `<td><select class='selectpicker' onchange='update_race(event)' required>
             <option selected value>--</option>`
 
@@ -274,6 +278,59 @@ function update_race(event) {
     xhr.send(formData);
 }
 
+function open_volunteer_popup(event) {
+
+    // Get the lane id
+    var cell = $(event.target)
+    var index = cell.parent().children().index(cell)
+    var lane_id = $(".gala th").eq(index).attr("lane-id");
+
+    // Get the volunteer email if there is one
+    var email = cell.attr("email") || "";
+
+    // Show the volunteer popup
+    var popup = $("#add-volunteer");
+
+    // Add the details to the popup
+    popup.find(".lane-no").text(index - 1);
+    popup.find(".lane-no").attr("lane-id", lane_id);
+    popup.find("#email").val(email);
+    popup.show()
+}
+
+function update_volunteer(event) {
+
+    // Create a FormData object
+    var formData = new FormData();
+
+    // Add the lane_id and email to the request
+    var form = $(event.target).parent().parent();
+    var lane_id = form.find(".lane-no").attr("lane-id");
+    var email = form.find("#email").val();
+    formData.append("lane_id", lane_id);
+    formData.append("email", email);
+
+    // Create an XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/update_volunteer");
+
+    // Set up a handler for when the request finishes
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // If the request was successful, update the email
+            var index = Number(form.find(".lane-no").text()) + 1;
+            var cell = $(".gala tbody").find("tr:nth-child(2)").find("td").eq(index);
+            cell.attr("email", email);
+            $("#add-volunteer").hide();
+        } else {
+            alert(xhr.responseText)
+        }
+    }
+
+    // Send the request
+    xhr.send(formData);
+}
+
 $(document).ready(function(){
     $(".gala").dragtable({
         // Prevents the blank (first) column from being dragged
@@ -294,7 +351,7 @@ $(document).ready(function(){
 
     $(".gala").sortable({
         // Prevents the head and remove row from being moved
-        items: "tbody tr:not( tr:first )",
+        items: "tbody tr:not( tr:first, tr:nth-child(2) )",
         // Only allows the name and heat columns to be dragged
         handle: "td:first, td:nth-child(2)",
         axis: "y",
@@ -314,7 +371,6 @@ $(document).ready(function(){
                 var placeholder = ui.placeholder.eq(index);
                 placeholder.html(item.html());
                 placeholder.css("visibility", "visible");
-                // this_is_not_a_function();
             });
         },
         helper: function(e, tr) {

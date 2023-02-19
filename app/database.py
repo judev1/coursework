@@ -856,6 +856,44 @@ class Database:
         """, (school_id,))
         return c.fetchall()
 
+    def add_volunteer(self, lane_id, email):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Generate a code for the volunteer
+        code = secrets.token_urlsafe(16)
+
+        # Inserts the volunteer into the database
+        c.execute("""
+            INSERT INTO Volunteer (
+                lane_id, email, code)
+            VALUES (?, ?, ?)
+        """, (lane_id, email, code))
+        self.conn.commit()
+
+    def get_volunteer(self, lane_id):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the volunteer
+        c.execute("""
+            SELECT *
+            FROM Volunteer
+            WHERE lane_id = ?
+        """, (lane_id,))
+        return c.fetchone()
+
+    def remove_volunteer(self, lane_id):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Deletes the volunteer
+        c.execute("""
+            DELETE FROM Volunteer
+            WHERE lane_id = ?
+        """, (lane_id,))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

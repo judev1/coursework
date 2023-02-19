@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/static/dragtables.css" />
 <script type="text/javascript" src="/static/dragtables.js"></script>
 <script type="text/javascript" src="/static/manage.js"></script>
+<script type="text/javascript" src="/static/email.js"></script>
 <script type="text/javascript" src="/static/hostingschool.js"></script>
 {% endblock %}
 {% block body %}
@@ -32,6 +33,16 @@
             <td class="blank dragtable-drag-boundary"></td>
             {% for lane in lanes %}
             <td class="remove-lane" onclick="remove_lane(event)">remove</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td class="blank dragtable-drag-boundary"></td>
+            <td class="blank dragtable-drag-boundary"></td>
+            {% for lane in lanes %}
+            <td class="add-volunteer" onclick="open_volunteer_popup(event)"
+                email={{ lane.volunteer.email if lane.volunteer else '' }}>
+                volunteer
+            </td>
             {% endfor %}
         </tr>
         {% for event in events %}
@@ -166,6 +177,28 @@
             <div class="button">
                 <input id="add" type="submit" value="Add event">
             </div>
+        </form>
+    </div>
+</div>
+<div id="add-volunteer" class="popup-wrapper">
+    <div class="popup">
+        <form onsubmit="return validatefields()" action="/add_event" method="post">
+            <a class="close" onclick="$('#add-volunteer').hide()">
+                <img src="static/images/cross.png">
+                Close
+            </a>
+            <div class="title">Lane <div class="lane-no"></div></div>
+            <div class="input">
+                <h1 class="text"><req></req>Email:</h1>
+                <input type="text" name="email" id="email" placeholder="appam@rugbyschool.net" autocomplete="off">
+            </div>
+            <p id="invalid-email" class="field-error">invalid email</p>
+            <br>
+            <div class="button" onclick="update_volunteer(event)">
+                <input id="add" type="button" value="Update volunteer">
+            </div>
+            <br>
+            <div class="information">The relevant people will be emailed informing them of their updated roles in the gala</div>
         </form>
     </div>
 </div>

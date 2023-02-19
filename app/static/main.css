@@ -309,7 +309,7 @@ form .field-error {
     padding: 2px;
     font-size: 12px;
     text-align: center;
-    color: var(--red);
+    color: var(--red) !important;
 }
 
 /* Profile styles */
@@ -649,6 +649,7 @@ input[type=checkbox]:checked + label::after {
 }
 
 .popup-wrapper .popup input[type=number],
+.popup-wrapper .popup input[type=text],
 .popup-wrapper .popup select {
     width: 186px;
     height: 32px;
@@ -882,6 +883,26 @@ input[type=checkbox]:checked + label::after {
     outline: 1px dotted var(--red);
 }
 
+.add-volunteer {
+    display: table-cell;
+    vertical-align: center;
+}
+
+.add-volunteer {
+    background: none;
+    /* color: var(--red) !important; */
+    padding: 2px !important;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.add-volunteer:hover,
+.add-volunteer:focus {
+    outline-offset: -1px;
+    outline: 1px dotted var(--blue);
+}
+
 .gala tbody td:first-child {
     width: 200px;
 }
@@ -891,7 +912,7 @@ input[type=checkbox]:checked + label::after {
     opacity: 1;
 }
 
-.gala tbody tr:nth-child(2n) td {
+.gala tbody tr:nth-child(2n + 3) td {
     background: var(--grey);
 }
 
@@ -1080,4 +1101,15 @@ input[type=checkbox]:checked + label::after {
 
 .pastgalas tr:nth-child(odd) td {
     background: var(--grey);
+}
+
+.lane-no {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.popup .information {
+    color: var(--yellow) !important;
+    font-size: 12px;
+    text-align: center;
 }
