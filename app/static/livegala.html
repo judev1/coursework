@@ -6,6 +6,16 @@
 <div>
     <h1 class="spacy">Live gala</h1>
 </div>
+<div class="sidebar">
+    <form class="form">
+        <h1 class="text">Score</h1>
+        {% for school in schools %}
+        <div>
+            {{ school.name }} - 0
+        </div>
+        {% endfor %}
+    </form>
+</div>
 <table class="livegala">
     {% for event in events %}
     {% for i in range(event.heats) %}
@@ -46,14 +56,4 @@
     {% endfor %}
     {% endfor %}
 </table>
-<div class="sidebar">
-    <form class="form">
-        <h1 class="text">Score</h1>
-        {% for school in schools %}
-        <div>
-            {{ school.name }} - 0
-        </div>
-        {% endfor %}
-    </form>
-</div>
 {% endblock %}

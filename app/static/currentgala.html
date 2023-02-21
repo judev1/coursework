@@ -6,6 +6,32 @@
 <div>
     <h1 class="spacy">{{ gala.competitors }}</h1>
 </div>
+<div class="sidebar">
+    <form class="form">
+        <div class="data">
+            <h1 class="text">Competing Schools:</h1>
+            {% set names = [] %}
+            {% for school in schools %}
+            {% if school.id in gala.school_ids %}
+            {{ '' if names.append(school.name) else '' }}
+            {% endif %}
+            {% endfor %}
+            {{ ", ".join(names) }}
+        </div>
+        <br><br>
+        <h1 class="text">Host:</h1>
+        <div class="data">
+            {% for school in gala.schools %}
+            {% if school.id == gala.host.id %}
+            {{ school.name }}
+            {% endif %}
+            {% endfor %}
+        </div>
+        <br><br>
+        <h1 class="text">Date:</h1>
+        <div class="data">{{ gala.date }}</div>
+    </form>
+</div>
 <table class="livegala">
     {% for event in events %}
     {% for i in range(event.heats) %}
@@ -42,30 +68,4 @@
     {% endfor %}
     {% endfor %}
 </table>
-<div class="sidebar">
-    <form class="form">
-        <div class="data">
-            <h1 class="text">Competing Schools:</h1>
-            {% set names = [] %}
-            {% for school in schools %}
-            {% if school.id in gala.school_ids %}
-            {{ '' if names.append(school.name) else '' }}
-            {% endif %}
-            {% endfor %}
-            {{ ", ".join(names) }}
-        </div>
-        <br><br>
-        <h1 class="text">Host:</h1>
-        <div class="data">
-            {% for school in gala.schools %}
-            {% if school.id == gala.host.id %}
-            {{ school.name }}
-            {% endif %}
-            {% endfor %}
-        </div>
-        <br><br>
-        <h1 class="text">Date:</h1>
-        <div class="data">{{ gala.date }}</div>
-    </form>
-</div>
 {% endblock %}

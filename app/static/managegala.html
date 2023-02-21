@@ -15,6 +15,41 @@
 <div>
     <h1 class="spacy">Manage gala</h1>
 </div>
+<div class="sidebar">
+    <form class="form">
+        <select name="schools" class="selectpicker" value={{ gala.host.name }} onchange="updatehosts();update_gala(event)" multiple required>
+            {% for school in schools %}
+            {% if user.school_id != school.id %}
+            <option value={{ school.id }} {{ 'selected' if school.id in gala.school_ids else '' }}>
+                {{ school.name }}
+            </option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        <br><br>
+        <h1 class="text">Host:</h1>
+        <select name="host" class="selectpicker" onchange="update_gala(event)" required>
+            {% for school in gala.schools %}
+            <option value={{ school.id }} {{ 'selected' if school.id == gala.host.id else '' }}>
+                {{ school.name }}
+            </option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <h1 class="text">Date:
+        </h1><input name="date" type="date" class="date" value={{ gala.date }}>
+        <br><br>
+        <div class="button">
+            <button type="button" onclick="add_lane(event)">Add lane</button>
+        </div>
+        <div class="button">
+            <button type="button" onclick="$('#add-event').show()">Add event</button>
+        </div>
+        <div class="button">
+            <button type="button" onclick="window.location.href='/make_live/{{ gala.id }}'">Make live</button>
+        </div>
+    </form>
+</div>
 <table class="gala">
     <thead class="lanes">
         <tr>
@@ -79,41 +114,6 @@
         {% endfor %}
     </tbody>
 </table>
-<div class="sidebar">
-    <form class="form">
-        <select name="schools" class="selectpicker" value={{ gala.host.name }} onchange="updatehosts();update_gala(event)" multiple required>
-            {% for school in schools %}
-            {% if user.school_id != school.id %}
-            <option value={{ school.id }} {{ 'selected' if school.id in gala.school_ids else '' }}>
-                {{ school.name }}
-            </option>
-            {% endif %}
-            {% endfor %}
-        </select>
-        <br><br>
-        <h1 class="text">Host:</h1>
-        <select name="host" class="selectpicker" onchange="update_gala(event)" required>
-            {% for school in gala.schools %}
-            <option value={{ school.id }} {{ 'selected' if school.id == gala.host.id else '' }}>
-                {{ school.name }}
-            </option>
-            {% endfor %}
-        </select>
-        <br><br>
-        <h1 class="text">Date:
-        </h1><input name="date" type="date" class="date" value={{ gala.date }}>
-        <br><br>
-        <div class="button">
-            <button type="button" onclick="add_lane(event)">Add lane</button>
-        </div>
-        <div class="button">
-            <button type="button" onclick="$('#add-event').show()">Add event</button>
-        </div>
-        <div class="button">
-            <button type="button" onclick="window.location.href='/make_live/{{ gala.id }}'">Make live</button>
-        </div>
-    </form>
-</div>
 <div id="add-event" class="popup-wrapper">
     <div class="popup">
         <form action="/add_event" method="post">
