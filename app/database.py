@@ -481,7 +481,7 @@ class Database:
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
 
-        # Checks if the school exists
+        # Gets the school
         c.execute("""
             SELECT *
             FROM School
@@ -494,7 +494,7 @@ class Database:
         # Creates a cursor object to execute SQL commands
         c = self.conn.cursor()
 
-        # Checks if the gala exists
+        # Gets the gala
         c.execute("""
             SELECT *
             FROM Gala
@@ -893,6 +893,30 @@ class Database:
             WHERE lane_id = ?
         """, (lane_id,))
         self.conn.commit()
+
+    def get_volunteer_by_id(self, volunteer_id):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the volunteer
+        c.execute("""
+            SELECT *
+            FROM Volunteer
+            WHERE volunteer_id = ?
+        """, (volunteer_id,))
+        return c.fetchone()
+
+    def get_lane_by_id(self, lane_id):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Gets the lane
+        c.execute("""
+            SELECT *
+            FROM Lane
+            WHERE lane_id = ?
+        """, (lane_id,))
+        return c.fetchone()
 
 # If database.py is the file being run
 if __name__ == '__main__':

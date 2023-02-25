@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="Shortcut Icon" href="/static/images/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" type="text/css" href="/static/main.css">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <title>Swimming Portal</title>
+        {% block head %}
+		{% endblock %}
+    </head>
+    <body>
+        <div class="background">
+            <img class="image" src="/static/images/exampleimage1.jpg">
+            <div class="gradient left"></div>
+            <div class="gradient right"></div>
+        </div>
+        <img class="shards" src="/static/images/shards.png">
+        <div class="main">
+            <div class="volunteer-text">
+                <h1 class="title">Lane {{ lane.number }}</h1>
+            </div>
+            <div id="stopwatch">
+                <div class="display">00:00:00</div>
+                <div class="info"></div>
+            </div>
+        </div>
+    </body>
+</html>

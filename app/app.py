@@ -1431,6 +1431,28 @@ def update_volunteer_method():
 
     return 'ok'
 
+# The route for the volunteer page
+@app.route('/volunteer/<volunteer_id>/<code>', methods=['GET'])
+def volunteer_page(volunteer_id, code):
+
+    # Checks if the volunteer exists
+    volunteer = db.get_volunteer_by_id(volunteer_id)
+    if not volunteer:
+        return 'Volunteer not found', 404
+    volunteer = Volunteer(volunteer)
+
+    # Checks if the volunteer code is valid
+    if volunteer.code != code:
+        return 'Invalid code', 400
+
+    lane = Lane(db.get_lane_by_id(volunteer.lane_id))
+
+    return render_template(
+        'volunteer.html',
+        volunteer=volunteer,
+        lane=lane
+    )
+
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
 # by itself for debugging)

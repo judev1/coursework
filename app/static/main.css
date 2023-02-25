@@ -114,7 +114,7 @@ req::before {
 .main {
     display: inline-block;
     width: 60%;
-    min-height: 100%;
+    min-height: calc(100% - 40px);
     margin-left: 8%;
     padding-bottom: 40px;
 }
@@ -1127,6 +1127,74 @@ input[type=checkbox]:checked + label::after {
     text-align: center;
 }
 
+#stopwatch {
+    position: fixed;
+    top: calc(50% - 300px);
+    left: calc(50% - 300px);
+    width: 300px;
+    height: 300px;
+    transform: translate(50%, 50%);
+    border-radius: 100%;
+    background: var(--blue);
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+#stopwatch .display {
+    color: white !important;
+    line-height: 300px !important;
+    font-size: 60px;
+}
+
+#stopwatch .info {
+    position: absolute;
+    top: calc(64% - 20px);
+    left: calc(50% - 100px);
+    width: 200px;
+    color: #c8cbcc !important;
+    line-height: 40px !important;
+    font-size: 20px;
+}
+
+#stopwatch:hover {
+    outline: 10px solid #c8cbcc;
+}
+
+#stopwatch[status="running"] {
+    outline: 10px solid var(--yellow);
+}
+
+#stopwatch[status="finished"] {
+    outline: 10px solid var(--green);
+    cursor: default;
+}
+
+#stopwatch > .info:after {
+    content: "Tap to start";
+}
+
+#stopwatch[status="running"] > .info:after {
+    content: "Tap to reload";
+}
+
+#stopwatch[status="running"] > .info:after {
+    content: "Tap to stop";
+}
+
+#stopwatch[status="finished"] > .info:after {
+    content: "";
+}
+
+.volunteer-text {
+    margin-top: 40px;
+    padding: 40px;
+}
+
+.volunteer-text .title {
+    font-size: 40px;
+}
+
 /* Mobile styles */
 
 @media (max-width: 1100px) {
@@ -1147,5 +1215,27 @@ input[type=checkbox]:checked + label::after {
     .gala,
     .livegala {
         width: 100%;
+    }
+
+    .volunteer-text .title {
+        font-size: 150px;
+        text-align: center;
+    }
+
+    #stopwatch {
+        position: fixed;
+        top: calc(50% - 600px);
+        left: calc(50% - 600px);
+        width: 600px;
+        height: 600px;
+    }
+
+    #stopwatch .display {
+        line-height: 600px !important;
+        font-size: 110px;
+    }
+
+    #stopwatch .info {
+        font-size: 40px;
     }
 }
