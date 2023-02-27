@@ -190,6 +190,7 @@ class Event:
     def list_races(self, lanes):
         for lane in lanes:
             for race in self.races:
+                print(race.id, race.swimmer_names())
                 # Checks if there is a race in the event for the lane
                 if race.lane_id == lane.id:
                     # Yields the lane and race back so it can be looped over
@@ -1452,6 +1453,40 @@ def volunteer_page(volunteer_id, code):
         volunteer=volunteer,
         lane=lane
     )
+
+# The route for the get live race method
+@app.route('/get_live_race', methods=['POST'])
+def get_live_race_method():
+
+    # Checks if the gala is currently live or active
+    status = db.get_gala_status()
+    if status == 0:
+        return 'Gala is not currently in progress', 400
+
+    # Checks if the user has provided the lane id
+    if 'lane_id' not in request.form:
+        return 'Lane id not provided', 400
+    lane_id = request.form['lane_id']
+
+    # Gets the lane and then all the events in the gala
+    lane = Lane(db.get_lane_by_id(lane_id))
+    events = map(Event, db.get_events(lane.gala.id))
+
+    live_event = None
+    for event in events:
+        # Checks if the event is live
+        if event.live:
+            # Checks if there is a race in the lane
+            for lane, race in event.list_races([lane]):
+                # Checks if there is already a time recorded for the lane
+                if race.time:
+                    return 'Time already recorded', 400
+                live_event = event.name
+                swimmers = race.swimmer_names()
+    if not live_event:
+        return 'No live event', 400
+
+    return {'event': live_event, 'swimmers': swimmers}
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run

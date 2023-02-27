@@ -604,7 +604,7 @@ input[type=checkbox]:checked + label::after {
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.4);
-    z-index: 2;
+    z-index: 20;
     overflow: scroll;
 }
 
@@ -1127,6 +1127,10 @@ input[type=checkbox]:checked + label::after {
     text-align: center;
 }
 
+.volunteer-text #lane {
+    font-size: 60px;
+}
+
 #stopwatch {
     position: fixed;
     top: calc(50% - 300px);
@@ -1147,6 +1151,15 @@ input[type=checkbox]:checked + label::after {
     font-size: 60px;
 }
 
+#stopwatch[status="inactive"] > .display:after {
+    content: "No active event";
+    font-size: 32px;
+}
+
+#stopwatch[status="ready"] > .display:after {
+    content: "00:00:00";
+}
+
 #stopwatch .info {
     position: absolute;
     top: calc(64% - 20px);
@@ -1154,11 +1167,15 @@ input[type=checkbox]:checked + label::after {
     width: 200px;
     color: #c8cbcc !important;
     line-height: 40px !important;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 #stopwatch:hover {
     outline: 10px solid #c8cbcc;
+}
+
+#stopwatch[status="inactive"]:hover {
+    outline: 10px solid var(--yellow);
 }
 
 #stopwatch[status="running"] {
@@ -1174,7 +1191,7 @@ input[type=checkbox]:checked + label::after {
     content: "Tap to start";
 }
 
-#stopwatch[status="running"] > .info:after {
+#stopwatch[status="inactive"] > .info:after {
     content: "Tap to reload";
 }
 
@@ -1217,9 +1234,20 @@ input[type=checkbox]:checked + label::after {
         width: 100%;
     }
 
-    .volunteer-text .title {
-        font-size: 150px;
+    .volunteer-text {
         text-align: center;
+    }
+
+    .volunteer-text #lane {
+        font-size: 150px;
+    }
+
+    .volunteer-text #swimmers {
+        font-size: 60px;
+    }
+
+    .volunteer-text #event {
+        font-size: 46.75px;
     }
 
     #stopwatch {
@@ -1236,6 +1264,10 @@ input[type=checkbox]:checked + label::after {
     }
 
     #stopwatch .info {
-        font-size: 40px;
+        font-size: 35px;
+    }
+
+    #stopwatch[status="inactive"] > .display:after {
+        font-size: 62px;
     }
 }

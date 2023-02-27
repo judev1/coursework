@@ -5,6 +5,7 @@
         <link rel="stylesheet" type="text/css" href="/static/main.css">
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="/static/stopwatch.js"></script>
         <title>Swimming Portal</title>
         {% block head %}
 		{% endblock %}
@@ -18,10 +19,11 @@
         <img class="shards" src="/static/images/shards.png">
         <div class="main">
             <div class="volunteer-text">
-                <h1 class="title">Lane {{ lane.number }}</h1>
+                <h1 id="lane" lane-id="{{ lane.id }}">Lane {{ lane.number }}</h1>
+                <h2 id="swimmers"></h2><h3 id="event"></h3>
             </div>
-            <div id="stopwatch">
-                <div class="display">00:00:00</div>
+            <div id="stopwatch" status="inactive" onclick="get_live_race()">
+                <div class="display"></div>
                 <div class="info"></div>
             </div>
         </div>
