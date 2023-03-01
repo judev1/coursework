@@ -55,7 +55,11 @@
                         {{ race.swimmer_names() }}
                     </td>
                     <td>
-                        --:--.--
+                        {% if race.time %}
+                            {{ race.time }}
+                        {% else %}
+                        --:--:--
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

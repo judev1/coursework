@@ -918,6 +918,18 @@ class Database:
         """, (lane_id,))
         return c.fetchone()
 
+    def record_time(self, lane_id, event_id, heat, time):
+        # Creates a cursor object to execute SQL commands
+        c = self.conn.cursor()
+
+        # Adds a time for a race
+        c.execute("""
+            UPDATE Race
+            SET time = ?
+            WHERE lane_id = ? AND event_id = ? AND heat = ?
+        """, (time, lane_id, event_id, heat))
+        self.conn.commit()
+
 # If database.py is the file being run
 if __name__ == '__main__':
 	# Creates a database called test.db

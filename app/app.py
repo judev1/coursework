@@ -190,7 +190,6 @@ class Event:
     def list_races(self, lanes):
         for lane in lanes:
             for race in self.races:
-                print(race.id, race.swimmer_names())
                 # Checks if there is a race in the event for the lane
                 if race.lane_id == lane.id:
                     # Yields the lane and race back so it can be looped over
@@ -1487,6 +1486,57 @@ def get_live_race_method():
         return 'No live event', 400
 
     return {'event': live_event, 'swimmers': swimmers}
+
+# The route for the record time method
+@app.route('/record_time', methods=['POST'])
+def record_time_method():
+
+    # Checks if the user has provided the volunteer id
+    if 'volunteer_id' not in request.form:
+        return 'Volunteer id not provided', 400
+    volunteer_id = request.form['volunteer_id']
+
+    # Checks if the user has provided the volunteer code
+    if 'volunteer_code' not in request.form:
+        return 'Volunteer code not provided', 400
+    code = request.form['volunteer_code']
+
+    # Checks if the user has provided the time
+    if 'time' not in request.form:
+        return 'Time not provided', 400
+    time = request.form['time']
+
+    # Checks if the volunteer exists
+    volunteer = db.get_volunteer_by_id(volunteer_id)
+    if not volunteer:
+        return 'Volunteer not found', 404
+    volunteer = Volunteer(volunteer)
+
+    # Checks if the volunteer code is valid
+    if volunteer.code != code:
+        return 'Invalid code', 400
+
+    # Gets the lane and then all the events in the gala
+    lane = Lane(db.get_lane_by_id(volunteer.lane_id))
+    events = map(Event, db.get_events(lane.gala.id))
+
+    live_event = None
+    for event in events:
+        # Checks if the event is live
+        if event.live:
+            # Checks if there is a race in the lane
+            for lane, race in event.list_races([lane]):
+                # Checks if there is already a time recorded for the lane
+                if race.time:
+                    return 'Time already recorded', 400
+                live_event = event
+    if not live_event:
+        return 'No live event', 400
+
+    # Records the time for the lane race
+    db.record_time(lane.id, live_event.id, 1, time)
+
+    return 'ok'
 
 # Checks to see if the current file is the one being run (ie if another file
 # called it then the app should have been run already, this file should on be run
