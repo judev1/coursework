@@ -1012,6 +1012,10 @@ input[type=checkbox]:checked + label::after {
     vertical-align: text-top;
 }
 
+.livegala .event td:last-child {
+    text-align: right;
+}
+
 .livegala tr:nth-child(2n - 1) {
     background: var(--grey);
 }
